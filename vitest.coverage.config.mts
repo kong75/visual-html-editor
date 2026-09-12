@@ -1,6 +1,13 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@visual-html/core': fileURLToPath(new URL('./packages/core/src/index.ts', import.meta.url)),
+      '@visual-html/deck': fileURLToPath(new URL('./packages/deck/src/index.ts', import.meta.url))
+    }
+  },
   test: {
     include: [
       'packages/core/src/**/*.test.ts',

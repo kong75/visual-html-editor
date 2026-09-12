@@ -10,6 +10,8 @@ Location: `packages/*/src/*.test.ts`
 
 These tests stay close to framework-neutral implementation details: parsing, source patches, commands, events, history, deck operations, and inline-mark transformations.
 
+React unit tests and the coverage runner resolve workspace packages directly to source, so they work on a fresh checkout without a preceding build. Packed-consumer tests separately verify the distributed artifacts.
+
 Run with:
 
 ```bash

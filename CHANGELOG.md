@@ -33,6 +33,7 @@ This project follows semantic versioning once packages are published.
 
 ### Fixed
 
+- Resolve workspace source in React unit tests and coverage so fresh checkouts do not depend on existing build output.
 - Make the controlled editor's JSX return type compatible with React 18 as well as React 19, including custom fallback rendering.
 - Refresh the import-panel visual baseline for the existing modal and identity, and isolate packed-browser test output from the main suite.
 - Make clock-driven demo tests and layer keyboard tests deterministic across browsers without changing their intermediate-state or history assertions.
