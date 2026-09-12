@@ -27,7 +27,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
         with:
           version: 10.22.0
@@ -59,7 +59,7 @@ jobs:
       matrix:
         node: [20.19.0, 22.18.0, 24.11.1]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
@@ -79,7 +79,7 @@ jobs:
     env:
       VHE_TEST_REACT_MAJOR: ${{ matrix.react }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
         with:
           version: 10.22.0
@@ -110,7 +110,7 @@ jobs:
     env:
       VHE_E2E_ALL_BROWSERS: 1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v4
         with:
           version: 10.22.0
