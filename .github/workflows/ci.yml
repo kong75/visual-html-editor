@@ -28,7 +28,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 10.22.0
       - uses: actions/setup-node@v4
@@ -80,7 +80,7 @@ jobs:
       VHE_TEST_REACT_MAJOR: ${{ matrix.react }}
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 10.22.0
       - uses: actions/setup-node@v4
@@ -111,7 +111,7 @@ jobs:
       VHE_E2E_ALL_BROWSERS: 1
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 10.22.0
       - uses: actions/setup-node@v4
