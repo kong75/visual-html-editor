@@ -1,0 +1,61 @@
+{
+  "name": "@visual-html/deck",
+  "version": "0.1.0",
+  "description": "Framework-neutral multi-slide document layer for Visual HTML Editor.",
+  "license": "MIT",
+  "keywords": [
+    "html",
+    "slides",
+    "deck",
+    "presentation",
+    "editor",
+    "typescript"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./adapters/claude-design": {
+      "types": "./dist/claude-design.d.ts",
+      "import": "./dist/claude-design.js",
+      "default": "./dist/claude-design.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "publint": "publint",
+    "attw": "attw --pack . --profile esm-only"
+  },
+  "dependencies": {
+    "parse5": "^8.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kong75/visual-html-editor.git",
+    "directory": "packages/deck"
+  },
+  "homepage": "https://github.com/kong75/visual-html-editor/tree/main/packages/deck#readme",
+  "bugs": {
+    "url": "https://github.com/kong75/visual-html-editor/issues"
+  }
+}

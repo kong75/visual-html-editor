@@ -1,0 +1,16 @@
+{
+  "name": "visual-html-headless-consumer-test",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "start": "node --import=tsx src/index.ts"
+  },
+  "dependencies": {
+    "@visual-html/core": "__CORE_TARBALL__"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.6",
+    "typescript": "^7.0.2"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "name": "visual-html-react-consumer-test",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit && vite build"
+  },
+  "dependencies": {
+    "@visual-html/core": "__CORE_TARBALL__",
+    "@visual-html/deck": "__DECK_TARBALL__",
+    "@visual-html/react": "__REACT_TARBALL__",
+    "@vitejs/plugin-react": "^6.0.5",
+    "react": "__REACT_VERSION__",
+    "react-dom": "__REACT_VERSION__",
+    "vite": "^8.2.1"
+  },
+  "devDependencies": {
+    "@types/react": "__REACT_TYPES_VERSION__",
+    "@types/react-dom": "__REACT_TYPES_VERSION__",
+    "typescript": "^7.0.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "@visual-html/core": "__CORE_TARBALL__",
+      "@visual-html/deck": "__DECK_TARBALL__",
+      "@visual-html/react": "__REACT_TARBALL__"
+    }
+  }
+}

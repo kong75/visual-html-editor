@@ -1,0 +1,21 @@
+name: Integration question
+description: Ask about using the editor in a host application.
+title: "[Question]: "
+body:
+  - type: markdown
+    attributes:
+      value: Read the integration guides first. Remove private templates, customer data, and credentials from examples. Follow SECURITY.md for vulnerabilities.
+  - type: textarea
+    id: question
+    attributes:
+      label: What are you trying to build?
+      description: Describe the host integration and where the current guides leave a question.
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Reduced example and environment
+      description: Include package versions, framework, browser, profile configuration, and a minimal HTML example if relevant.
+    validations:
+      required: true

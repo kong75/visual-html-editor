@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.vite/
+coverage/
+.stryker-tmp/
+reports/mutation/
+test-results/
+test-results-*/
+playwright-report/
+.artifacts/
+.logs/
+*.log
+*.tgz
+.DS_Store
+.env
+.env.*
+!.env.example
