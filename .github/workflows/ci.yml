@@ -43,7 +43,7 @@ jobs:
       - run: pnpm test:consumers
       - name: Save packed packages for runtime compatibility tests
         if: matrix.os == 'ubuntu-latest' && matrix.node == '24.11.1'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: runtime-packages
           path: .artifacts/consumer-tests/tarballs/*.tgz
@@ -90,7 +90,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps chromium
       - run: pnpm test:e2e:packed:prepare
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: browser-failure-react-${{ matrix.react }}
@@ -121,7 +121,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm exec playwright install --with-deps ${{ matrix.browser }}
       - run: pnpm exec playwright test --project=${{ matrix.browser }}
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: browser-failure-${{ matrix.browser }}
