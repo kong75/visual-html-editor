@@ -57,7 +57,7 @@
     "attw": "attw --pack . --profile esm-only"
   },
   "dependencies": {
-    "entities": "^8.0.0",
+    "entities": "^8.1.0",
     "magic-string": "^1.2.0",
     "parse5": "^8.0.1",
     "postcss": "8.5.26"
