@@ -10,9 +10,12 @@ change belongs without requiring a read of the original design documents.
 | Policy or preview isolation | `packages/core/src/security.ts`, `runtime-security.ts`, `validation.ts` | Policy tests, browser security suite, coverage, mutation tests |
 | Rich-text source transforms | `packages/core/src/rich-text.ts` | Rich-text unit/property tests and browser WYSIWYG regressions |
 | Controlled React lifecycle | `packages/react/src/use-html-editor.ts`, `html-editor.tsx` | React lifecycle tests and controlled-browser scenarios |
-| Canvas selection and editing | `packages/react/src/runtime-selection.ts`, `visual-html-editor.tsx`, `text-edit-history.ts` | Showcase, accessibility, and WYSIWYG browser suites |
-| Inspector controls | `packages/react/src/inspector-controls.tsx`, `inspector-body.tsx`, `inspector-values.ts` | Selected-element, resilience, and visual scenarios |
-| Imports | `packages/react/src/use-html-import.ts`, `html-import-dialog.tsx` | HTML/deck import, resilience, and keyboard tests |
+| Workspace composition and layout | `packages/react/src/visual-html-editor.tsx`, `workspace/toolbar.tsx`, `workspace/stage.tsx`, `workspace/sidebar.tsx` | Visual, accessibility, and showcase scenarios |
+| Canvas document lifecycle | `packages/react/src/canvas/use-runtime.ts`, `canvas/document.ts` | Controller/profile switching, source mode, and browser security scenarios |
+| Pointer selection, drag, and resize | `packages/react/src/canvas/pointer.ts`, `canvas/use-selection.ts`, `canvas/use-layout.ts`, `canvas/selection.ts` | Touch, overlap, drag, and resize browser scenarios |
+| Inline text and keyboard history | `packages/react/src/canvas/rich-text.ts`, `canvas/keyboard.ts`, `canvas/use-text-editing.ts`, `canvas/text-edit-history.ts` | WYSIWYG/history and keyboard accessibility scenarios |
+| Inspector controls and drafts | `packages/react/src/inspector/use-properties.ts`, `inspector/controls.tsx`, `inspector/body.tsx`, `inspector/values.ts` | Selected-element, resilience, and visual scenarios |
+| Imports and file actions | `packages/react/src/import/use-html-import.ts`, `import/html-import-dialog.tsx`, `workspace/use-files.ts` | HTML/deck import, resilience, and keyboard tests |
 | Deck operations | `packages/deck/src/controller.ts`, `serialization.ts` | Deck tests and packed runtime consumer |
 | Host showcase | `apps/showcase/src` | Showcase/demo/browser scenarios |
 | Packaging and release checks | `scripts`, `.github/workflows`, `tests/consumers` | `pnpm release:check` and CI |

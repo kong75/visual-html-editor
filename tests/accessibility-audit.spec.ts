@@ -18,20 +18,28 @@ test('passes automated accessibility audit on the landing page', async ({ page }
   await expectNoSeriousAccessibilityViolations(page);
 });
 
-test('passes automated accessibility audit for visual, source, and controlled editor states', async ({ page }) => {
+test('passes automated accessibility audit for the visual editor', async ({ page }) => {
   await page.goto('/#/editor');
   await expect(page.getByTestId('visual-html-editor')).toBeVisible();
   await expectNoSeriousAccessibilityViolations(page);
+});
 
+test('passes automated accessibility audit for the selected-element inspector', async ({ page }) => {
+  await page.goto('/#/editor');
   await page.frameLocator('iframe[title="Visual HTML canvas"]').locator('h1').click();
   await expect(page.locator('.vhe-inspector__title code')).toHaveText('h1');
   await expectNoSeriousAccessibilityViolations(page);
+});
 
+test('passes automated accessibility audit for source mode', async ({ page }) => {
+  await page.goto('/#/editor');
   await page.getByRole('button', { name: 'Source' }).click();
   await expect(page.getByLabel('HTML source')).toBeVisible();
   await expectNoSeriousAccessibilityViolations(page);
+});
 
-  await page.getByRole('button', { name: 'Visual' }).click();
+test('passes automated accessibility audit for import confirmation', async ({ page }) => {
+  await page.goto('/#/editor');
   await page.getByLabel('Import HTML file').setInputFiles({
     name: 'accessible-import.html',
     mimeType: 'text/html',
@@ -40,7 +48,10 @@ test('passes automated accessibility audit for visual, source, and controlled ed
   await expect(page.getByRole('dialog', { name: 'Import accessible-import.html' })).toBeVisible();
   await expectNoSeriousAccessibilityViolations(page);
   await page.getByRole('dialog').getByRole('button', { name: 'Cancel' }).click();
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+});
 
+test('passes automated accessibility audit for the controlled editor', async ({ page }) => {
   await page.goto('/#/controlled');
   await expect(page.getByTestId('visual-html-editor')).toBeVisible();
   await expectNoSeriousAccessibilityViolations(page);

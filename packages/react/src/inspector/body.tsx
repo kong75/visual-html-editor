@@ -1,7 +1,7 @@
 import React from 'react';
 import type { ParsedNode, EditorProfile } from '@visual-html/core';
-import { InspectorInput, InspectorSelect, InspectorDisclosure } from './inspector-controls.js';
-import { attributeValue } from './source-node.js';
+import { InspectorInput, InspectorSelect, InspectorDisclosure } from './controls.js';
+import { attributeValue } from '../source-node.js';
 
 interface InspectorBodyProps {
   selectedNode: ParsedNode;

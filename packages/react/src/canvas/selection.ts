@@ -1,6 +1,6 @@
 import type { EditorController, InlineMark, NodeKey, ParsedNode, TextRange } from '@visual-html/core';
-import { resolveElementBehavior, type ElementBehaviorResolver } from './element-behavior.js';
-import { runtimeAttributes } from './runtime-attributes.js';
+import { resolveElementBehavior, type ElementBehaviorResolver } from '../element-behavior.js';
+import { runtimeAttributes } from './attributes.js';
 
 export interface RuntimeHitCandidate {
   element: HTMLElement;

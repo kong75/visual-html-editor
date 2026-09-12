@@ -24,6 +24,8 @@ This project follows semantic versioning once packages are published.
 
 ### Changed
 
+- Reduce the editor composition root to focused hook and view composition; separate canvas document, pointer, keyboard, text, layout, and inspector responsibilities.
+- Run Chromium, Firefox, and WebKit in independent CI jobs so each engine reports its own result.
 - Correct package Node requirements to >=20.19.0, matching the parser dependency; use Node 24.11.1 for development.
 - Move historical architecture, requirements, and implementation plans under `docs/design`; public package entry points are preserved.
 
@@ -33,6 +35,7 @@ This project follows semantic versioning once packages are published.
 
 ### Fixed
 
+- Give each accessibility audit its own test budget instead of sharing one timeout across five editor states.
 - Resolve workspace source in React unit tests and coverage so fresh checkouts do not depend on existing build output.
 - Make the controlled editor's JSX return type compatible with React 18 as well as React 19, including custom fallback rendering.
 - Refresh the import-panel visual baseline for the existing modal and identity, and isolate packed-browser test output from the main suite.

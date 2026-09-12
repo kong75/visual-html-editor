@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type ChangeEvent } from 'react';
 import { EditorController, type EditorProfile } from '@visual-html/core';
-import type { HtmlImportAdapter, HtmlImportInput, HtmlImportPreview, HtmlImportResult } from './editor-types.js';
-import { isHtmlFile, formatFileSize } from './browser-files.js';
+import type { HtmlImportAdapter, HtmlImportInput, HtmlImportPreview, HtmlImportResult } from '../editor-types.js';
+import { isHtmlFile, formatFileSize } from '../workspace/browser-files.js';
 
 export interface PendingHtmlImport {
   input: HtmlImportInput;

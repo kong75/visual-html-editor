@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Upload } from 'lucide-react';
 import type { PendingHtmlImport } from './use-html-import.js';
-import { formatFileSize } from './browser-files.js';
+import { formatFileSize } from '../workspace/browser-files.js';
 
 interface HtmlImportDialogProps {
   pendingHtmlImport: PendingHtmlImport;

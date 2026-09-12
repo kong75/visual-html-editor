@@ -45,16 +45,19 @@ Locations:
 - `tests/showcase.spec.ts` — primary editing and integration workflows.
 - `tests/security.spec.ts` — hostile paste, source validation, export blocking, and iframe isolation.
 - `tests/accessibility.spec.ts` — accessible names, landmarks, keyboard focus, Escape behavior, and compact target sizing.
-- `tests/accessibility-audit.spec.ts` — automated WCAG 2.0/2.1 A and AA checks for the landing page and host editor states.
+- `tests/accessibility-audit.spec.ts` — independent automated WCAG 2.0/2.1 A and AA audits for the landing page and each host editor state, with one test budget per scan.
 - `tests/generated-content.spec.ts` — render-and-edit coverage for the compatibility corpus of generated email, slides, reports, and fragments.
 - `tests/resilience.spec.ts` — invalid assets and HTML files, host upload failures, incompatible deck imports, and controlled external-update conflicts.
 - `tests/performance.spec.ts` — a browser responsiveness budget for a 200-card generated document.
 - `tests/touch.spec.ts` — touch-pointer drag and resize behavior.
 - `tests/visual-regression.spec.ts` — stable Chromium snapshots for the landing illustration, toolbar, selected-element inspector, and HTML import confirmation.
 - `tests/editing-demo.spec.ts` — guided showcase playback and controls.
+- `tests/editor-lifecycle.spec.ts` — preserve the live canvas through selection and inspector-only renders.
 - `tests/wysiwyg-regressions.spec.ts` — source/rendering agreement and editing regressions.
 
 The suite includes editing demos and WYSIWYG regression scenarios in addition to the integration and quality checks above. Run `pnpm exec playwright test --list` for the current inventory. Test totals belong to dated run output, not a permanent support promise.
+
+CI runs Chromium, Firefox, and WebKit as independent jobs. Packed React-major consumer smoke tests have their own jobs and do not gate or duplicate the full browser matrix.
 
 Install and run the default managed Chromium browser:
 

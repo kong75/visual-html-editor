@@ -1,7 +1,7 @@
 import React from 'react';
 import type { NodeKey, ParsedNode } from '@visual-html/core';
-import { resolveElementBehavior, type ElementBehaviorResolver } from './element-behavior.js';
-import { attributeValue } from './source-node.js';
+import { resolveElementBehavior, type ElementBehaviorResolver } from '../element-behavior.js';
+import { attributeValue } from '../source-node.js';
 
 export const outlineHiddenTags = new Set(['html', 'head', 'style', 'script', 'meta', 'title', 'link', 'base', 'noscript']);
 
