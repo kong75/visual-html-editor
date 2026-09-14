@@ -1,0 +1,8 @@
+packages:
+  - .
+
+allowBuilds:
+  'esbuild@0.28.2': true
+
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true

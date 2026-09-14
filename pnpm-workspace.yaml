@@ -1,0 +1,19 @@
+packages:
+  - packages/*
+  - apps/*
+
+autoInstallPeers: true
+strictPeerDependencies: true
+linkWorkspacePackages: true
+
+allowBuilds:
+  'esbuild@0.28.2': true
+
+# Keep pnpm 12's supply-chain delay strict. These exact releases are
+# provenance-attested and were verified while refreshing the lockfile.
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+minimumReleaseAgeExclude:
+  - lucide-react@1.46.0
+  - tldts@7.4.13
+  - tldts-core@7.4.13

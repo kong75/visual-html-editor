@@ -1,0 +1,14 @@
+packages:
+  - .
+
+allowBuilds:
+  'esbuild@0.28.2': true
+
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+
+minimumReleaseAgeExclude:
+  - lucide-react@1.46.0
+
+overrides:
+  '@visual-html/core': __CORE_TARBALL__

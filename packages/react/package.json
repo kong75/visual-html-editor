@@ -1,0 +1,70 @@
+{
+  "name": "@visual-html/react",
+  "version": "0.1.0",
+  "description": "React UI adapter for Visual HTML Editor.",
+  "license": "MIT",
+  "keywords": [
+    "react",
+    "html",
+    "editor",
+    "wysiwyg",
+    "email",
+    "slides"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "sideEffects": [
+    "./dist/styles.css"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./styles.css": {
+      "types": "./styles.css.d.ts",
+      "default": "./dist/styles.css"
+    }
+  },
+  "files": [
+    "dist",
+    "styles.css.d.ts",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "test": "vitest run --passWithNoTests",
+    "typecheck": "tsc --noEmit",
+    "publint": "publint",
+    "attw": "attw --pack . --profile esm-only --exclude-entrypoints ./styles.css"
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.8.0",
+    "@visual-html/core": "workspace:*",
+    "@visual-html/deck": "workspace:*",
+    "lucide-react": "^1.46.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kong75/visual-html-editor.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://github.com/kong75/visual-html-editor/tree/main/packages/react#readme",
+  "bugs": {
+    "url": "https://github.com/kong75/visual-html-editor/issues"
+  }
+}

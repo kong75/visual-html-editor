@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quarterly report</title>
+  <style>
+    .report-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+    @media (max-width: 720px) { .report-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body style="margin: 0; color: #171a24; background-color: #f7f8fb; font-family: Arial, sans-serif;">
+  <main style="max-width: 1120px; margin: 0 auto; padding: 64px 24px;">
+    <p style="color: #5367e8; text-transform: uppercase;">{{quarter}} · {{year}}</p>
+    <h1 id="fixture-title" style="max-width: 780px; margin: 0; font-size: 64px; line-height: 1;">A clearer view of product momentum</h1>
+    <p id="mixed-copy" style="max-width: 680px; color: #596171; font-size: 20px; line-height: 1.6;">Revenue grew <strong>{{growth_rate}}</strong> while support volume stayed <em>nearly flat</em>.</p>
+    <section class="report-grid">
+      <article style="padding: 24px; background-color: #ffffff;"><h2>Adoption</h2><p>{{adoption}}</p></article>
+      <article style="padding: 24px; background-color: #ffffff;"><h2>Retention</h2><p>{{retention}}</p></article>
+      <article style="padding: 24px; background-color: #ffffff;"><h2>Expansion</h2><p>{{expansion}}</p></article>
+    </section>
+  </main>
+</body>
+</html>

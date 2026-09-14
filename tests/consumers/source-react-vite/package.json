@@ -1,0 +1,21 @@
+{
+  "name": "visual-html-source-consumer-test",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit && vite build"
+  },
+  "dependencies": {
+    "@visual-html/core": "__CORE_TARBALL__",
+    "@visual-html/editor": "__EDITOR_TARBALL__",
+    "@vitejs/plugin-react": "^6.1.1",
+    "react": "__REACT_VERSION__",
+    "react-dom": "__REACT_VERSION__",
+    "vite": "^8.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "__REACT_TYPES_VERSION__",
+    "@types/react-dom": "__REACT_TYPES_VERSION__",
+    "typescript": "^7.0.2"
+  }
+}
