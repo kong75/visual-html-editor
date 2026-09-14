@@ -660,7 +660,7 @@
 .vhe-inline-format__button[data-active='true'] { color: #fff; background: #8057b4; }
 .vhe-inline-format__button:disabled { color: #746e7a; }
 .vhe-inline-format__divider { width: 1px; height: 20px; flex: none; margin-inline: 3px; background: rgba(255,255,255,.13); }
-.vhe-inline-format__field { display: grid; min-width: 0; gap: 4px; color: #7c7187; font-size: 8px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.vhe-inline-format__field { display: grid; min-width: 0; gap: 4px; color: #7c7187; font-size: 8px; font-weight: 700; line-height: 1.25; letter-spacing: .07em; text-transform: uppercase; }
 .vhe-inline-format__field > :is(input, select) {
   width: 86px;
   min-width: 0;
