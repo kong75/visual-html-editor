@@ -19,16 +19,22 @@ test('keeps a large generated document responsive within a browser budget', asyn
 
   await page.getByRole('button', { name: 'Source' }).click();
   await page.getByLabel('HTML source').fill(html);
-  const loadStarted = await page.evaluate(() => performance.now());
-  await page.getByRole('button', { name: 'Apply' }).click();
+  const apply = page.getByRole('button', { name: 'Apply' });
+  await apply.evaluate((button) => {
+    button.addEventListener('click', () => performance.mark('vhe-large-document-load-start'), { capture: true, once: true });
+  });
+  await apply.click();
   const articles = page.frameLocator('iframe[title="Visual HTML canvas"]').locator('article');
   await expect(articles).toHaveCount(200, { timeout: 5_000 });
-  const loadDuration = await page.evaluate((started) => performance.now() - started, loadStarted);
+  const loadDuration = await page.evaluate(() => performance.now() - performance.getEntriesByName('vhe-large-document-load-start').at(-1)!.startTime);
   expect(loadDuration, 'large-document load duration').toBeLessThan(LARGE_DOCUMENT_LOAD_BUDGET_MS);
 
-  const selectionStarted = await page.evaluate(() => performance.now());
-  await page.frameLocator('iframe[title="Visual HTML canvas"]').locator('#card-199 h2').click();
+  const heading = page.frameLocator('iframe[title="Visual HTML canvas"]').locator('#card-199 h2');
+  await heading.evaluate((element) => {
+    element.addEventListener('click', () => performance.mark('vhe-selection-start'), { capture: true, once: true });
+  });
+  await heading.click();
   await expect(page.locator('.vhe-inspector__title code')).toHaveText('h2', { timeout: 1_000 });
-  const selectionDuration = await page.evaluate((started) => performance.now() - started, selectionStarted);
+  const selectionDuration = await heading.evaluate(() => performance.now() - performance.getEntriesByName('vhe-selection-start').at(-1)!.startTime);
   expect(selectionDuration, 'selection response duration').toBeLessThan(SELECTION_RESPONSE_BUDGET_MS);
 });
