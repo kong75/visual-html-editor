@@ -166,4 +166,4 @@ Start with the [documentation index](./docs/README.md).
 - [Security model](./docs/security.md), [HTML compatibility matrix](./docs/html-compatibility.md), and [runtime compatibility](./docs/compatibility.md)
 - [Contributor map](./docs/contributor-map.md) and [implemented architecture](./ARCHITECTURE.md)
 - [Public declaration reference](./api/README.md) and [versioning](./docs/versioning.md)
-- [Roadmap](./ROADMAP.md), [release procedure](./RELEASING.md), and [public release checklist](./docs/public-release-checklist.md)
+- [Roadmap](./ROADMAP.md) and [release procedure](./RELEASING.md)

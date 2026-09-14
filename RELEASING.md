@@ -1,6 +1,6 @@
 # Releasing
 
-Public npm publication requires completing the [public release checklist](./docs/public-release-checklist.md). The preparation commands below do not publish packages or create tags.
+Before public npm publication, confirm ownership of the `@visual-html` scope and availability of all four package names. The preparation commands below do not publish packages or create tags.
 
 ## Version policy
 
@@ -108,4 +108,3 @@ Publication is not atomic across packages, and a published version cannot simply
 4. If an existing package matches, skip it and publish only the missing packages from the same verified artifacts, in order. Fix authentication or transient registry failures before retrying.
 5. If source, dependencies, or package contents must change, prepare a new coordinated version and release commit. Do not retag the old commit or try to overwrite an existing version. Document the incomplete prerelease and complete registry verification for its replacement.
 6. If a dist-tag was changed incorrectly, restore it explicitly to the last known complete release with `npm dist-tag add @visual-html/<package>@<known-version> next`. Verify all four tags before announcing completion.
-

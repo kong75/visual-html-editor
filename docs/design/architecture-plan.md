@@ -6,7 +6,7 @@
 **Version:** 1.1  
 **Date:** August 15, 2026  
 **Related document:** [Product and Technical Requirements](./requirements.md)  
-**Implementation status:** Active; implemented coverage and remaining gaps are tracked in [OPEN_SOURCE_READINESS.md](../../OPEN_SOURCE_READINESS.md)
+**Implementation status:** Active; see the [current architecture](../../ARCHITECTURE.md) and [roadmap](../../ROADMAP.md)
 
 ## 1. Purpose
 
@@ -112,8 +112,8 @@ visual-html-editor/
 ├── docs/
 ├── tests/
 ├── ARCHITECTURE.md
-├── REQUIREMENTS.md
-└── OPEN_SOURCE_READINESS.md
+├── CONTRIBUTING.md
+└── README.md
 ```
 
 ### 4.1 `@visual-html/core`

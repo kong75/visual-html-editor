@@ -14,9 +14,8 @@ This is the current delivery plan. Historical requirements and sequencing propos
 
 Configured checks describe repository automation; passing release evidence comes from a run on the release commit.
 
-## Before public alpha
+## Alpha follow-up
 
-- Complete the [public release checklist](./docs/public-release-checklist.md), including scope ownership and private reporting contacts.
 - Complete the first prerelease cycle and verify packages from the registry.
 - Collect real host integrations and representative customer-supplied fixtures.
 - Add deterministic compatibility diagnostics for unsupported or partially editable HTML.

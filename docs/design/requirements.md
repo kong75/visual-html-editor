@@ -6,7 +6,7 @@
 **Version:** 0.2  
 **Date:** August 15, 2026  
 **License:** MIT  
-**Implementation status:** Alpha implementation in progress; coverage is tracked in [OPEN_SOURCE_READINESS.md](../../OPEN_SOURCE_READINESS.md)
+**Implementation status:** Alpha implementation in progress; see the [current architecture](../../ARCHITECTURE.md) and [roadmap](../../ROADMAP.md)
 
 ## 1. Product summary
 
@@ -585,7 +585,7 @@ Mobile browser editing is not required for the first release, but mobile preview
 
 - One public monorepo.
 - MIT license preferred, subject to final review.
-- Clear contribution guide and code of conduct.
+- Clear contribution and security guides.
 - Public roadmap and issue templates.
 - Automated tests and build checks.
 - Versioned changelog.

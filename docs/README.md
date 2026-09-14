@@ -28,8 +28,6 @@
 - [Architecture decisions](./adr/README.md)
 - [Roadmap](../ROADMAP.md)
 - [Release procedure](../RELEASING.md)
-- [Public release checklist](./public-release-checklist.md)
-- [Governance](../GOVERNANCE.md)
 
 ## Context and historical records
 

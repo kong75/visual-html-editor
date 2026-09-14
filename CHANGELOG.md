@@ -6,7 +6,7 @@ This project follows semantic versioning once packages are published.
 
 ### Added
 
-- Contributor map, current architecture guide, explicit compatibility policy, and private-to-public release checklist.
+- Contributor map, current architecture guide, explicit compatibility policy, and release guidance.
 - Portable Chromium defaults, opt-in Edge tests, coordinated release-version tooling, and documentation-link checks.
 - Complete reachable declaration snapshots and Node/React packed-consumer compatibility jobs.
 - Focused internal modules for inspector controls, layer rendering, runtime selection, and HTML import.

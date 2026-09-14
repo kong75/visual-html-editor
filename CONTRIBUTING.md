@@ -1,6 +1,6 @@
 # Contributing
 
-Contributions are welcome during the public alpha. Read the [contributor map](./docs/contributor-map.md) and [governance](./GOVERNANCE.md) before making a broad change.
+Contributions are welcome during the public alpha. Read the [contributor map](./docs/contributor-map.md) before making a broad change.
 
 ## Development setup
 
@@ -54,4 +54,4 @@ New dependencies need a clear reason, compatible licensing, and package-size con
 
 Tests write generated traces, screenshots, and consumer tarballs to ignored output directories. Commit maintained baselines only under `tests/snapshots`, never local `test-results*` output.
 
-By participating, you agree to follow the [code of conduct](./CODE_OF_CONDUCT.md). Handle vulnerability reports according to the [security policy](./SECURITY.md).
+Handle vulnerability reports according to the [security policy](./SECURITY.md).
