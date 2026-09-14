@@ -42,7 +42,7 @@ The core currently edits a single HTML source document, including inline styles 
 The default workspace is organized by responsibility:
 
 - `editor-types.ts`: public props, asset adapters, and import contracts. Existing package exports remain the API boundary.
-- `workspace/toolbar.tsx`, `workspace/stage.tsx`, and `workspace/sidebar.tsx`: workspace presentation, including canvas/source switching and inspector composition.
+- `workspace/toolbar.tsx`, `workspace/navigator.tsx`, `workspace/stage.tsx`, and `workspace/sidebar.tsx`: workspace presentation, including global editing actions, left-side document navigation, canvas/source switching, and the right-side inspector.
 - `canvas/use-runtime.ts`: one iframe document's setup, event subscriptions, observer, and cleanup. `canvas/document.ts`, `canvas/pointer.ts`, `canvas/rich-text.ts`, and `canvas/keyboard.ts` implement its separate interaction responsibilities.
 - `canvas/use-selection.ts`, `canvas/use-text-editing.ts`, and `canvas/use-layout.ts`: selection overlays, local text history and caret restoration, and viewport fitting/resizing.
 - `outline/use-outline.ts`, `inspector/use-properties.ts`, `workspace/use-files.ts`, and `workspace/use-shortcuts.ts`: layer state, property drafts, file actions, and host-window shortcuts.
@@ -54,7 +54,7 @@ The default workspace is organized by responsibility:
 - `import/use-html-import.ts` and `import/html-import-dialog.tsx`: import preparation, replacement state, modal focus, and confirmation.
 - `workspace/browser-files.ts`: local file reading and HTML downloads.
 
-Internal modules are not new public extension points. Use package exports, profile configuration, documented adapters, and the existing toolbar/sidebar slots. More granular inspector composition remains on the roadmap.
+Internal modules in the compiled `@visual-html/react` package are not public extension points. Package consumers use its exports, profile configuration, documented adapters, and toolbar/sidebar slots. Applications that need ownership of the interface can instead use the `@visual-html/editor` source registry to copy the non-deck React workspace into their repository. Copied modules are application source rather than versioned library APIs; the registry updates only untouched files and preserves local modifications. More granular independently installable primitives remain on the roadmap.
 
 Runtime bindings have stable identities across selection and inspector renders. Only document/profile revisions or a mode/controller change rebuild the iframe session. Session cleanup releases listeners, the resize observer, pending frame refresh, and active drag previews. See [ADR-0003](./docs/adr/0003-react-workspace-modules.md) for the ownership rules.
 

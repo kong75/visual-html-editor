@@ -19,7 +19,7 @@ test('cleared text blocks can be clicked and typed into without changing exporte
   await paragraph.press('Backspace');
   await paragraph.press('Tab');
   await expect(paragraph).toBeEmpty();
-  expect((await paragraph.boundingBox())!.height).toBeGreaterThan(10);
+  expect(await paragraph.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThan(10);
   await page.getByRole('button', { name: 'Source', exact: true }).click();
   await expect(page.getByLabel('HTML source')).toHaveValue('<p id="empty"></p><p>Other text</p>');
   await page.getByRole('button', { name: 'Cancel', exact: true }).click();

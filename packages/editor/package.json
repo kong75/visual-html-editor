@@ -7,10 +7,13 @@
   "type": "module",
   "engines": { "node": ">=20.19.0" },
   "bin": { "visual-html": "./bin/visual-html.mjs" },
-  "files": ["bin", "dist", "README.md", "LICENSE"],
+  "files": ["bin", "dist", "registry", "README.md", "LICENSE"],
   "publishConfig": { "access": "public", "provenance": true },
   "scripts": {
-    "build": "vite build",
+    "registry:build": "node ../../scripts/build-source-registry.mjs",
+    "build": "pnpm registry:build && vite build",
+    "prepack": "pnpm registry:build",
+    "pretest": "pnpm registry:build",
     "test": "node --test test/*.test.mjs",
     "typecheck": "tsc --noEmit",
     "publint": "publint"

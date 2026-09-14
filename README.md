@@ -106,6 +106,17 @@ For save, navigation, or close boundaries, keep an `HtmlEditorHandle` ref and ca
 
 The local showcase resolves these packages from workspace source. For a separate application before npm publication, follow the [local package integration guide](./docs/getting-started.md#try-the-packaged-react-integration).
 
+### Own and edit the interface source
+
+Applications that need complete control over the editor interface can copy the React workspace into their own source tree instead of importing the compiled React package:
+
+```bash
+npx @visual-html/editor init
+npx @visual-html/editor add editor
+```
+
+The generated source continues to use `@visual-html/core` for parsing, validation, history, and source transformations. `visual-html diff editor` reports local and upstream differences; `visual-html update editor` updates untouched files and preserves application changes. See [editable source installation](./docs/source-installation.md).
+
 ### Configure what users can change
 
 Extend a preset to fit your workflow. For example, disable source editing, file import, and element deletion while retaining the preset's text and style controls:
@@ -127,7 +138,7 @@ Pass `contentProfile` to `HtmlEditor`. Profiles also control HTML and CSS polici
 
 | Package | Use it for |
 | --- | --- |
-| [@visual-html/editor](./packages/editor/README.md) | A zero-install local-file trial with explicit save |
+| [@visual-html/editor](./packages/editor/README.md) | A local-file trial and editable React source installer |
 | [@visual-html/react](./packages/react/README.md) | The ready-to-embed canvas, outline, inspector, and React lifecycle |
 | [@visual-html/core](./packages/core/README.md) | HTML source editing, policy validation, undo/redo, and export without React |
 | [@visual-html/deck](./packages/deck/README.md) | Ordered HTML slides, deck history, serialization, and format adapters |
@@ -140,7 +151,7 @@ Evaluate your own documents against these boundaries:
 
 - **HTML compatibility:** the focus is static HTML and CSS. Runtime-generated React/Vue applications and arbitrary document scripts are outside the current scope. Relative external stylesheets and assets can be resolved in preview with `baseUrl`.
 - **Formatting and layout:** link and list controls, rich clipboard paste, snapping, rotation, and multi-selection remain future work. Selected text supports semantic emphasis plus source-preserving font, size, weight, color, line-height, and tracking controls.
-- **Custom interfaces:** the React workspace is opinionated. The core can power another UI, but custom canvases currently need their own pointer and selection integration.
+- **Custom interfaces:** the compiled React workspace is opinionated. Install its editable source to change that workspace directly, or use the core for a completely independent UI. New editing operations may still require extending the core.
 - **Email rendering:** a browser preview does not guarantee email-client rendering. Keep your existing send validation and email-client testing.
 - **Validation:** import preserves disallowed source and reports issues; it does not sanitize it. The default UI blocks export on blocking issues. Headless integrations must check the issues returned by `export()` before publishing.
 
@@ -150,7 +161,7 @@ See the [security model](./docs/security.md) and [headless guide](./docs/headles
 
 Start with the [documentation index](./docs/README.md).
 
-- [Getting started](./docs/getting-started.md) and [controlled React integration](./docs/controlled-react.md)
+- [Getting started](./docs/getting-started.md), [controlled React integration](./docs/controlled-react.md), and [editable source installation](./docs/source-installation.md)
 - [Custom profiles](./docs/custom-profiles.md), [headless core](./docs/headless-core.md), and [slide decks](./docs/decks.md)
 - [Security model](./docs/security.md), [HTML compatibility matrix](./docs/html-compatibility.md), and [runtime compatibility](./docs/compatibility.md)
 - [Contributor map](./docs/contributor-map.md) and [implemented architecture](./ARCHITECTURE.md)

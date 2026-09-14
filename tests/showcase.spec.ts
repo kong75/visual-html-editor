@@ -44,11 +44,14 @@ test('loads the email profile with an isolated visual canvas', async ({ page }) 
   await expect(page.getByTestId('visual-html-editor')).toHaveCSS('border-radius', '0px');
   await expect(page.getByTestId('visual-html-editor')).toHaveCSS('box-shadow', 'none');
   await expect(page.getByTitle('Visual HTML canvas')).toHaveAttribute('sandbox', 'allow-same-origin allow-scripts');
-  const sidebarBox = await page.locator('.vhe-inspector').boundingBox();
+  const navigatorBox = await page.locator('.vhe-navigator').boundingBox();
   const stageBox = await page.locator('.vhe-stage').boundingBox();
-  expect(sidebarBox).not.toBeNull();
+  const inspectorBox = await page.locator('.vhe-inspector').boundingBox();
+  expect(navigatorBox).not.toBeNull();
   expect(stageBox).not.toBeNull();
-  expect(sidebarBox!.x).toBeLessThan(stageBox!.x);
+  expect(inspectorBox).not.toBeNull();
+  expect(navigatorBox!.x).toBeLessThan(stageBox!.x);
+  expect(inspectorBox!.x).toBeGreaterThan(stageBox!.x);
   const frame = page.frameLocator('iframe[title="Visual HTML canvas"]');
   await expect(frame.locator('h1')).toContainText('Build skills');
   expect(await frame.locator('html').evaluate((element) => ({

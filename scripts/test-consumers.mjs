@@ -82,4 +82,16 @@ const reactVite = await prepareConsumer('react-vite', {
 run(['install', '--ignore-workspace', '--no-frozen-lockfile'], reactVite);
 run(['build'], reactVite);
 
+const sourceReactVite = await prepareConsumer('source-react-vite', {
+  '__CORE_TARBALL__': fileDependency(packed.core),
+  '__EDITOR_TARBALL__': fileDependency(packed.editor),
+  '__REACT_VERSION__': reactMajor === '18' ? '18.2.0' : '19.0.0',
+  '__REACT_TYPES_VERSION__': reactMajor === '18' ? '^18.2.0' : '^19.0.0'
+});
+run(['install', '--ignore-workspace', '--no-frozen-lockfile'], sourceReactVite);
+run(['exec', 'visual-html', 'init'], sourceReactVite);
+run(['exec', 'visual-html', 'add', 'editor', '--no-install'], sourceReactVite);
+run(['install', '--ignore-workspace', '--no-frozen-lockfile'], sourceReactVite);
+run(['build'], sourceReactVite);
+
 process.stdout.write('Packed consumer tests passed.\n');

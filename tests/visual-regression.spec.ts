@@ -56,6 +56,23 @@ test('editor toolbar visual structure remains stable', async ({ page }) => {
   });
 });
 
+test('editor workspace keeps navigation and properties on opposite sides', async ({ page }) => {
+  await page.goto('/#/editor');
+  await page.frameLocator('iframe[title="Visual HTML canvas"]').locator('h1').click();
+  const navigator = await page.locator('.vhe-navigator').boundingBox();
+  const stage = await page.locator('.vhe-stage').boundingBox();
+  const inspector = await page.locator('.vhe-inspector').boundingBox();
+  expect(navigator).not.toBeNull();
+  expect(stage).not.toBeNull();
+  expect(inspector).not.toBeNull();
+  expect(navigator!.x + navigator!.width).toBeLessThanOrEqual(stage!.x + 1);
+  expect(stage!.x + stage!.width).toBeLessThanOrEqual(inspector!.x + 1);
+  await stabilizeVisuals(page);
+  await expect(page.locator('.vhe-layout')).toHaveScreenshot('editor-split-workspace.png', {
+    animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.04
+  });
+});
+
 test('selected element inspector visual structure remains stable', async ({ page }) => {
   await page.goto('/#/editor');
   await page.frameLocator('iframe[title="Visual HTML canvas"]').locator('h1').click();
