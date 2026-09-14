@@ -3,6 +3,8 @@ import type { EditorProfile, ParsedNode } from '@visual-html/core';
 import { Code2 } from 'lucide-react';
 import type { useCanvasSelection } from '../canvas/use-selection.js';
 import type { useCanvasLayout } from '../canvas/use-layout.js';
+import type { useTextEditing } from '../canvas/use-text-editing.js';
+import { SelectionFormatting } from './selection-toolbar.js';
 
 interface EditorStageProps {
   documentTitle: string;
@@ -11,14 +13,16 @@ interface EditorStageProps {
   profile: EditorProfile;
   selectedNode: ParsedNode | undefined;
   selection: ReturnType<typeof useCanvasSelection>;
+  textEditing: ReturnType<typeof useTextEditing>;
   layout: ReturnType<typeof useCanvasLayout>;
   sourceDraft: string;
   setSourceDraft: (source: string) => void;
   applySource: () => Promise<void>;
 }
 
-export function EditorStage({ documentTitle, mode, setMode, profile, selectedNode, selection, layout, sourceDraft, setSourceDraft, applySource }: EditorStageProps) {
+export function EditorStage({ documentTitle, mode, setMode, profile, selectedNode, selection, textEditing, layout, sourceDraft, setSourceDraft, applySource }: EditorStageProps) {
   const { overlay, runtime: { iframeRef, overlayRef, resizeHandleRef } } = selection;
+  const { richTextSelection, runtime: { toggleInlineMark, setInlineStyles } } = textEditing;
   const { aspect, canvasScale, stageViewportRef, startResize } = layout;
   return (
     <main className={`vhe-stage${mode === 'source' ? ' vhe-stage--source' : ''}`}>
@@ -69,6 +73,15 @@ export function EditorStage({ documentTitle, mode, setMode, profile, selectedNod
           </div>
           <textarea aria-label="HTML source" value={sourceDraft} onChange={(event) => setSourceDraft(event.target.value)} spellCheck={false} />
         </section>
+      )}
+      {mode === 'visual' && richTextSelection && profile.capabilities.editText && (
+        <SelectionFormatting
+          profile={profile}
+          selection={richTextSelection}
+          iframeRef={iframeRef}
+          toggleInlineMark={toggleInlineMark}
+          setInlineStyles={setInlineStyles}
+        />
       )}
     </main>
   );

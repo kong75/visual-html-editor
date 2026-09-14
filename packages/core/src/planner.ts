@@ -3,7 +3,7 @@ import { duplicateSource } from './duplicate-source.js';
 import { setInlineStyleProperty } from './inline-style.js';
 import { parseHtmlSource } from './parser.js';
 import { applySourcePatches } from './patcher.js';
-import { isInlineMarkTag, RichTextRangeError, richTextSourceEdits, toggleInlineMarkInHtml } from './rich-text.js';
+import { isInlineMarkTag, RichTextRangeError, richTextSourceEdits, setInlineStylesInHtml, toggleInlineMarkInHtml } from './rich-text.js';
 import { attributeNameAllowed, cssValueAllowed, urlValueAllowed } from './security.js';
 import { validateWorkspace } from './validation.js';
 import { attributeInsertionPoint } from './source-attributes.js';
@@ -23,6 +23,10 @@ export interface PlannedCommand {
 }
 
 export type PlanResult = PlannedCommand | CommandFailure;
+
+const inlineTextStyleProperties = new Set([
+  'font-family', 'font-size', 'font-weight', 'color', 'line-height', 'letter-spacing'
+]);
 
 function failure(code: string, message: string): CommandFailure {
   return { ok: false, code, message };
@@ -294,6 +298,44 @@ function planCommandUnchecked(
       } catch (error) {
         if (error instanceof RichTextRangeError) return failure('invalid-text-range', error.message);
         throw error;
+      }
+    }
+
+    case 'setInlineStyles': {
+      if (!profile.capabilities.editText || !profile.capabilities.editStyles) {
+        return failure('capability-denied', 'Selected-text style editing is disabled.');
+      }
+      if (node.virtual || !node.innerRange) {
+        return failure('node-not-editable', 'The selected element has no editable rich-text source.');
+      }
+      if (!profile.html.allowedTags.includes('span') || !attributeNameAllowed('style', profile)) {
+        return failure('policy-denied', `Styled text spans are not allowed by the ${profile.label} profile.`);
+      }
+      const styles = Object.entries(command.styles);
+      if (styles.length === 0) return failure('no-change', 'No selected-text styles were provided.');
+      for (const [rawProperty, value] of styles) {
+        const property = rawProperty.toLowerCase();
+        if (!inlineTextStyleProperties.has(property)) {
+          return failure('invalid-style', `CSS property “${property}” cannot be applied to a text selection.`);
+        }
+        if (!profile.html.allowedCssProperties.includes(property)) {
+          return failure('policy-denied', `CSS property “${property}” is not allowed.`);
+        }
+        if (typeof value !== 'string' || !value.trim() || !cssValueAllowed(value, profile)) {
+          return failure('policy-denied', `CSS value for “${property}” is empty or contains a disallowed URL or executable construct.`);
+        }
+      }
+      const innerHtml = source.slice(node.innerRange.start, node.innerRange.end);
+      try {
+        const transformed = setInlineStylesInHtml(innerHtml, command.range, command.styles);
+        if (transformed.html === innerHtml) return failure('no-change', 'The selected text styles are already applied.');
+        return {
+          description: styles.length === 1 ? `Style selected text with ${styles[0][0]}` : 'Style selected text',
+          patches: [patchForRange(node, source, node.innerRange.start, node.innerRange.end, transformed.html)]
+        };
+      } catch (error) {
+        if (error instanceof RichTextRangeError) return failure('invalid-text-range', error.message);
+        return failure('invalid-style', 'The selected-text style could not be parsed as a CSS declaration.');
       }
     }
 

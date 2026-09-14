@@ -1,6 +1,6 @@
 import React from 'react';
 import type { EditorSnapshot, NodeKey, ParsedNode } from '@visual-html/core';
-import { Bold, Code2, Eye, ImagePlus, MousePointer2, Redo2, Undo2 } from 'lucide-react';
+import { Code2, Eye, ImagePlus, MousePointer2, Redo2, Undo2 } from 'lucide-react';
 import { resolveElementBehavior, type ElementBehaviorResolver } from '../element-behavior.js';
 import { ComponentOutlineNode } from '../outline/component-outline.js';
 import { InspectorBody } from '../inspector/body.js';
@@ -21,13 +21,13 @@ interface EditorSidebarProps {
   setMode: (mode: 'visual' | 'source') => void;
   openSource: () => void;
   onImage: () => void;
+  readOnly: boolean;
 }
 
-export function EditorSidebar({ snapshot, selectedKey, selectedNode, outline, textEditing, inspector, elementBehaviorResolvers, sidebarHeader, mode, setMode, openSource, onImage }: EditorSidebarProps) {
+export function EditorSidebar({ snapshot, selectedKey, selectedNode, outline, textEditing, inspector, elementBehaviorResolvers, sidebarHeader, mode, setMode, openSource, onImage, readOnly }: EditorSidebarProps) {
   const { outlineNodes, outlineRoots, outlineNodeCount, collapsedOutlineKeys, selectOutlineNode, toggleOutlineNode } = outline;
-  const { richTextSelection, textHistoryState, runtime: { toggleInlineMark, activeRichTextEditRef, runHistory } } = textEditing;
-  const { propertyDrafts, computedStyleValues, renderedStyleDifferences, expandedBoxControl, setExpandedBoxControl, updateStyleDraft, applyStyle, applyAttribute } = inspector;
-  const canToggleBold = Boolean(richTextSelection && snapshot.profile.html.allowedTags.includes('strong'));
+  const { textHistoryState, runtime: { activeRichTextEditRef, runHistory } } = textEditing;
+  const { propertyDrafts, computedStyleValues, expandedBoxControl, setExpandedBoxControl, updateStyleDraft, applyStyle, applyAttribute } = inspector;
   const inspectorTitle = selectedNode
     ? resolveElementBehavior(selectedNode, outlineNodes, elementBehaviorResolvers).kind
     : 'Properties';
@@ -57,20 +57,6 @@ export function EditorSidebar({ snapshot, selectedKey, selectedNode, outline, te
         <div className="vhe-inspector__title-copy"><span>{inspectorTitle}</span>{selectedNode && <code>{selectedNode.tagName}</code>}</div>
         <div className="vhe-inspector__tools" role="toolbar" aria-label="Editing tools">
           <div className="vhe-inspector__tool-group">
-            {snapshot.profile.capabilities.editText && (
-              <button
-                type="button"
-                className={`vhe-tool-button${richTextSelection?.activeMarks.strong ? ' vhe-tool-button--active' : ''}`}
-                disabled={!canToggleBold}
-                aria-label="Bold selected text"
-                aria-pressed={richTextSelection?.activeMarks.strong ?? false}
-                title="Bold · Ctrl+B"
-                onPointerDown={(event) => event.preventDefault()}
-                onClick={() => void toggleInlineMark('strong')}
-              >
-                <Bold size={14} strokeWidth={2.1} aria-hidden="true" />
-              </button>
-            )}
             {snapshot.profile.capabilities.insertImages && <button type="button" className="vhe-tool-button" onClick={onImage} aria-label="Image" title="Insert image"><ImagePlus size={15} strokeWidth={1.8} aria-hidden="true" /></button>}
             {snapshot.profile.capabilities.editSource && (
               <button type="button" className={`vhe-tool-button${mode === 'source' ? ' vhe-tool-button--active' : ''}`} onClick={mode === 'visual' ? openSource : () => setMode('visual')} aria-label={mode === 'visual' ? 'Source' : 'Visual'} title={mode === 'visual' ? 'Edit HTML source' : 'Return to canvas'}>
@@ -79,22 +65,25 @@ export function EditorSidebar({ snapshot, selectedKey, selectedNode, outline, te
             )}
           </div>
           <div className="vhe-inspector__tool-group vhe-inspector__tool-group--history">
-            <button type="button" className="vhe-tool-button" disabled={!snapshot.canUndo && !textHistoryState.canUndo} onPointerDown={(event) => { if (activeRichTextEditRef.current) event.preventDefault(); }} onClick={() => runHistory('undo')} aria-label="Undo" title="Undo · Ctrl/Cmd+Z"><Undo2 size={15} strokeWidth={1.8} aria-hidden="true" /></button>
-            <button type="button" className="vhe-tool-button" disabled={!snapshot.canRedo && !textHistoryState.canRedo} onPointerDown={(event) => { if (activeRichTextEditRef.current) event.preventDefault(); }} onClick={() => runHistory('redo')} aria-label="Redo" title="Redo · Ctrl/Cmd+Shift+Z"><Redo2 size={15} strokeWidth={1.8} aria-hidden="true" /></button>
+            <button type="button" className="vhe-tool-button" disabled={readOnly || (!snapshot.canUndo && !textHistoryState.canUndo)} onPointerDown={(event) => { if (activeRichTextEditRef.current) event.preventDefault(); }} onClick={() => runHistory('undo')} aria-label="Undo" title="Undo · Ctrl/Cmd+Z"><Undo2 size={15} strokeWidth={1.8} aria-hidden="true" /></button>
+            <button type="button" className="vhe-tool-button" disabled={readOnly || (!snapshot.canRedo && !textHistoryState.canRedo)} onPointerDown={(event) => { if (activeRichTextEditRef.current) event.preventDefault(); }} onClick={() => runHistory('redo')} aria-label="Redo" title="Redo · Ctrl/Cmd+Shift+Z"><Redo2 size={15} strokeWidth={1.8} aria-hidden="true" /></button>
           </div>
         </div>
       </div>
       {!selectedNode ? (
-        <div className="vhe-empty"><div className="vhe-empty__illustration" aria-hidden="true"><i /><i /><i /><MousePointer2 size={27} strokeWidth={1.5} /></div><strong>A little change starts here.</strong><p>Select an element on the canvas to make it yours.</p><div className="vhe-empty__tips"><span><MousePointer2 size={13} aria-hidden="true" /> Click text to edit in place</span><span><Code2 size={13} aria-hidden="true" /> Choose a layer for precise control</span><span><kbd>Alt</kbd> + click to select nested layers</span></div></div>
+        <div className="vhe-empty"><div className="vhe-empty__illustration" aria-hidden="true"><i /><i /><i /><MousePointer2 size={27} strokeWidth={1.5} /></div><strong>{readOnly ? 'Inspect this document.' : 'A little change starts here.'}</strong><p>{readOnly ? 'Select an element to inspect it.' : 'Select an element on the canvas to make it yours.'}</p><div className="vhe-empty__tips"><span><MousePointer2 size={13} aria-hidden="true" /> {readOnly ? 'Click an element to inspect it' : 'Click text to edit in place'}</span><span><Code2 size={13} aria-hidden="true" /> Choose a layer for precise control</span><span><kbd>Alt</kbd> + click to select nested layers</span></div></div>
       ) : (
-        <InspectorBody
-          selectedNode={selectedNode} profile={snapshot.profile} revision={snapshot.revision}
-          propertyDrafts={propertyDrafts} computedStyleValues={computedStyleValues}
-          renderedStyleDifferences={renderedStyleDifferences}
-          expandedBoxControl={expandedBoxControl} setExpandedBoxControl={setExpandedBoxControl}
-          updateStyleDraft={updateStyleDraft} applyStyle={applyStyle} applyAttribute={applyAttribute}
-          onReplaceImage={onImage}
-        />
+        <div className="vhe-inspector__body">
+          {!readOnly && (
+            <InspectorBody
+              selectedNode={selectedNode} profile={snapshot.profile} revision={snapshot.revision}
+              propertyDrafts={propertyDrafts} computedStyleValues={computedStyleValues}
+              expandedBoxControl={expandedBoxControl} setExpandedBoxControl={setExpandedBoxControl}
+              updateStyleDraft={updateStyleDraft} applyStyle={applyStyle} applyAttribute={applyAttribute}
+              onReplaceImage={onImage}
+            />
+          )}
+        </div>
       )}
     </aside>
   );

@@ -22,7 +22,8 @@ test('keeps both routes coherent on a narrow viewport', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { name: /Make HTML feel alive/i })).toBeVisible();
   await expect(page.locator('.landing-motion__window')).toBeVisible();
-  await page.getByRole('link', { name: /Start editing/ }).click();
+  await page.getByRole('link', { name: /Try your HTML/ }).first().click();
+  await expect(page.getByRole('region', { name: 'Try your own HTML' })).toBeVisible();
   await expect(page.getByTestId('visual-html-editor')).toBeVisible();
 
   const stageBox = await page.locator('.vhe-stage').boundingBox();
@@ -353,6 +354,74 @@ test('toggles bold across mixed inline markup without rewriting surrounding HTML
 
   await page.getByRole('button', { name: 'Source' }).click();
   await expect(page.getByLabel('HTML source')).toHaveValue('<p id="mixed">Hello <em>beautiful</em> world &amp; friends.</p>');
+});
+
+test('styles a selected text range with typography, emphasis, and block alignment', async ({ page }) => {
+  await page.getByRole('button', { name: 'Source' }).click();
+  await page.getByLabel('HTML source').fill('<p id="range-style" class="lead" style="line-height: 1.25">Hello <em>beautiful</em> world &amp; friends.</p>');
+  await page.getByRole('button', { name: 'Apply' }).click();
+
+  const text = page.frameLocator('iframe[title="Visual HTML canvas"]').locator('#range-style');
+  await text.click();
+  await text.evaluate((element) => {
+    const doc = element.ownerDocument;
+    const walker = doc.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    const points: Array<{ node: Node; start: number; end: number }> = [];
+    let cursor = 0;
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const length = node.textContent?.length ?? 0;
+      points.push({ node, start: cursor, end: cursor + length });
+      cursor += length;
+    }
+    const locate = (offset: number) => {
+      const point = points.find((candidate) => offset <= candidate.end) ?? points.at(-1)!;
+      return { node: point.node, offset: Math.max(0, offset - point.start) };
+    };
+    const start = locate(6);
+    const end = locate(21);
+    const range = doc.createRange();
+    range.setStart(start.node, start.offset);
+    range.setEnd(end.node, end.offset);
+    const selection = doc.defaultView?.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    doc.dispatchEvent(new Event('selectionchange'));
+  });
+
+  await expect(page.getByRole('region', { name: 'Selected text formatting' })).toBeVisible();
+  await expect(page.locator('.vhe-stage').getByRole('region', { name: 'Selected text formatting' })).toBeVisible();
+  await expect(page.locator('.vhe-inspector').getByRole('region', { name: 'Selected text formatting' })).toHaveCount(0);
+  const size = page.getByRole('textbox', { name: 'Size for selected text' });
+  await size.fill('24px');
+  await size.press('Enter');
+  await expect(text.locator('span')).toHaveCount(2);
+  await expect(text.locator('em span')).toHaveCSS('font-size', '24px');
+  await expect(text.locator(':scope > span')).toHaveCSS('font-size', '24px');
+
+  await expect(page.getByRole('textbox', { name: 'Weight for selected text' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'More text options' }).click();
+  const weight = page.getByRole('textbox', { name: 'Weight for selected text' });
+  await expect(page.getByRole('textbox', { name: 'Line height for selected text' })).toHaveValue('1.25');
+  await weight.fill('650');
+  await weight.press('Enter');
+  await expect(text.locator('em span')).toHaveCSS('font-weight', '650');
+
+  await page.getByLabel('Color for selected text').fill('#2563eb');
+  await expect(text.locator('em span')).toHaveCSS('color', 'rgb(37, 99, 235)');
+  await page.getByRole('button', { name: 'Italicize selected text' }).click();
+  await page.getByRole('button', { name: 'Underline selected text' }).click();
+  await page.getByRole('button', { name: 'Strike selected text' }).click();
+  await expect(page.getByRole('button', { name: 'Italicize selected text' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: 'Underline selected text' })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('button', { name: 'Strike selected text' })).toHaveAttribute('aria-pressed', 'true');
+
+  await page.locator('[data-style-property="text-align"]').getByRole('combobox').click();
+  await page.getByRole('option', { name: 'center', exact: true }).click();
+  await expect(text).toHaveCSS('text-align', 'center');
+  await page.getByRole('button', { name: 'Source' }).click();
+  await expect(page.getByLabel('HTML source')).toHaveValue(/class="lead" style="line-height: 1.25; text-align: center"/);
+  await expect(page.getByLabel('HTML source')).toHaveValue(/font-size: 24px; font-weight: 650; color: #2563eb/);
 });
 
 test('edits wording inside mixed inline markup while preserving its styles', async ({ page }) => {

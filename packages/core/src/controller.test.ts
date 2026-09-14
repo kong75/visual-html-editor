@@ -161,6 +161,28 @@ describe('EditorController', () => {
     expect((await controller.export()).html).toContain('<strong>beautiful</strong>');
   });
 
+  it('applies source-preserving styles to a selected text range', async () => {
+    const controller = await EditorController.create({
+      html: '<p class="lead">Hello <em>beautiful</em> world &amp; friends.</p>',
+      profile: webProfile
+    });
+    const paragraph = nodeByTag(controller, 'p');
+    const result = await controller.dispatch({
+      type: 'setInlineStyles',
+      nodeKey: paragraph.key,
+      range: { start: 6, end: 21 },
+      styles: { 'font-size': '24px', color: '#7c3aed' }
+    });
+
+    expect(result.ok).toBe(true);
+    expect((await controller.export()).html).toBe(
+      '<p class="lead">Hello <em><span style="font-size: 24px; color: #7c3aed">beautiful</span></em><span style="font-size: 24px; color: #7c3aed"> world</span> &amp; friends.</p>'
+    );
+    expect(nodeByTag(controller, 'p').key).toBe(paragraph.key);
+    expect((await controller.undo()).ok).toBe(true);
+    expect((await controller.export()).html).toBe('<p class="lead">Hello <em>beautiful</em> world &amp; friends.</p>');
+  });
+
   it('edits mixed rich text as one source-backed undoable patch', async () => {
     const controller = await EditorController.create({
       html: '<section data-layout="keep"><p id="mixed">Hello <em class=\'accent\'>beautiful</em> world &amp; friends.</p></section>',

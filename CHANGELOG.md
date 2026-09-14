@@ -21,6 +21,11 @@ This project follows semantic versioning once packages are published.
 - Typed controller lifecycle events and explicit external-source replacement policies.
 - Controlled `HtmlEditor` and `useHtmlEditor` React APIs with transaction-level host callbacks.
 - Packed headless and React consumer builds, public API snapshots, and package-size budgets.
+- `@visual-html/editor` local-file CLI with preview-relative asset resolution and explicit save.
+- React `flush()`, `baseUrl`, and runtime `readOnly` integration APIs.
+- An HTML compatibility matrix covering common authored document structures.
+- Source-preserving selected-text typography with font, size, weight, color, line-height, tracking, emphasis, and block alignment controls.
+- Inline selected-text toolbar plus public React selection events and selection-preserving formatting methods.
 
 ### Changed
 
@@ -28,6 +33,7 @@ This project follows semantic versioning once packages are published.
 - Run Chromium, Firefox, and WebKit in independent CI jobs so each engine reports its own result.
 - Correct package Node requirements to >=20.19.0, matching the parser dependency; use Node 24.11.1 for development.
 - Move historical architecture, requirements, and implementation plans under `docs/design`; public package entry points are preserved.
+- Make importing a visitor's own HTML the primary showcase path while keeping examples available for exploration.
 
 ### Known limitations
 
@@ -42,7 +48,7 @@ This project follows semantic versioning once packages are published.
 - Make clock-driven demo tests and layer keyboard tests deterministic across browsers without changing their intermediate-state or history assertions.
 
 - Cleared text blocks remain clickable without adding placeholder source content.
-- Inspector edits reject unsupported CSS values and show effective values when rendering differs from authored styles.
+- Inspector edits reject unsupported CSS values and keep authored values primary when stylesheets affect rendering.
 - Element duplication allocates unique IDs and remaps local references inside copied subtrees.
 - Slide navigation exposes deck undo/redo, and workspace save status includes deck changes.
 - HTML import confirmation isolates keyboard focus and prevents background editing shortcuts.

@@ -8,7 +8,7 @@ import type { CanvasRuntimeContext } from './runtime-types.js';
 export function createCanvasRichText(context: CanvasRuntimeContext) {
   const { controller, snapshot, doc, attrs, outlineNodes, elementBehaviorResolversRef, setNotice } = context;
   const { selectedKeyRef, selectNode, syncOverlay } = context.selection;
-  const { activeRichTextEditRef, richTextSelectionRef, setRichTextSelection, commitActiveRichTextEdit, refreshTextHistory, runHistory, toggleInlineMark } = context.textEditing;
+  const { activeRichTextEditRef, setRichTextSelection, commitActiveRichTextEdit, refreshTextHistory, runHistory, toggleInlineMark } = context.textEditing;
 
   const beginInlineEdit = (
     candidateElement: HTMLElement,
@@ -25,7 +25,7 @@ export function createCanvasRichText(context: CanvasRuntimeContext) {
     const node = region.node;
     const richRegion = node.hasElementChildren && isRichTextRegion(node, controller);
     if ((node.hasElementChildren && !richRegion) || !node.innerRange) {
-      if (reportUnsupported) setNotice('This element contains nested markup. Use source mode for this MVP.');
+      if (reportUnsupported) setNotice('This element contains nested structural content. Select a child text layer, or edit the HTML in Source.');
       return false;
     }
 
@@ -67,7 +67,6 @@ export function createCanvasRichText(context: CanvasRuntimeContext) {
 
   const handleSelectionChange = () => {
     const next = readRichTextSelection(doc, controller, outlineNodes, elementBehaviorResolversRef.current);
-    richTextSelectionRef.current = next;
     setRichTextSelection(next);
     if (next && selectedKeyRef.current !== next.nodeKey) selectNode(next.nodeKey);
   };
@@ -120,17 +119,20 @@ export function createCanvasRichText(context: CanvasRuntimeContext) {
       void runHistory(event.inputType === 'historyUndo' ? 'undo' : 'redo');
       return;
     }
-    if (event.inputType !== 'formatBold') activeRichTextEditRef.current?.history.before(event.inputType);
+    const markForInputType = ({
+      formatBold: 'strong', formatItalic: 'em', formatUnderline: 'u', formatStrikeThrough: 's'
+    } as const)[event.inputType as 'formatBold' | 'formatItalic' | 'formatUnderline' | 'formatStrikeThrough'];
+    if (!markForInputType) activeRichTextEditRef.current?.history.before(event.inputType);
     if (!event.isComposing && ['insertParagraph', 'insertLineBreak'].includes(event.inputType)) {
       event.preventDefault();
       replaceSelectionWithText(doc, '\n');
       handleInput();
       return;
     }
-    if (event.inputType === 'formatBold') {
+    if (markForInputType) {
       event.preventDefault();
       const selection = readRichTextSelection(doc, controller, outlineNodes, elementBehaviorResolversRef.current);
-      if (selection) void toggleInlineMark('strong', selection);
+      if (selection) void toggleInlineMark(markForInputType, selection);
       return;
     }
     if (!event.isComposing && ['insertText', 'insertReplacementText'].includes(event.inputType) && event.data !== null) {

@@ -29,7 +29,7 @@ test('cleared text blocks can be clicked and typed into without changing exporte
   await expect(paragraph).toHaveText('Recovered');
 });
 
-test('inspector shows the rendered value when important CSS overrides an edit', async ({ page }) => {
+test('inspector keeps the authored value primary when important CSS overrides it', async ({ page }) => {
   await loadHtml(page, '<style>.fixed{font-size:28px!important}</style><p class="fixed">Important text</p>');
   const paragraph = canvas(page).locator('p');
   await paragraph.click();
@@ -37,9 +37,10 @@ test('inspector shows the rendered value when important CSS overrides an edit', 
   await page.getByRole('textbox', { name: 'Size', exact: true }).fill('44px');
   await page.getByRole('textbox', { name: 'Size', exact: true }).press('Tab');
   await expect(paragraph).toHaveCSS('font-size', '28px');
-  await expect(page.getByRole('status', { name: 'Rendered style values' })).toContainText('font-size: 28px on canvas (source: 44px).');
-  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(page.getByRole('textbox', { name: 'Size', exact: true })).toHaveValue('44px');
   await expect(page.getByRole('status', { name: 'Rendered style values' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(page.getByRole('textbox', { name: 'Size', exact: true })).toHaveValue('28px');
 });
 
 test('invalid inspector CSS is rejected while relative units and variables remain supported', async ({ page }) => {

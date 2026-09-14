@@ -2,7 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import semver from 'semver';
 
-export const releaseManifestFiles = ['package.json', ...['core', 'deck', 'react'].map((name) => `packages/${name}/package.json`)];
+export const releaseManifestFiles = ['package.json', ...['core', 'deck', 'editor', 'react'].map((name) => `packages/${name}/package.json`)];
 
 export async function prepareReleaseVersion(root, version) {
   if (version !== '--check' && semver.valid(version) !== version) {

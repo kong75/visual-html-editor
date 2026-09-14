@@ -2,11 +2,11 @@ import { hardenRuntimeHtml, type EditorController, type EditorSnapshot } from '@
 import { bindRuntimeAttributes } from './attributes.js';
 import { isRichTextRegion } from './selection.js';
 
-export function writeCanvasDocument(frame: HTMLIFrameElement, controller: EditorController, snapshot: EditorSnapshot) {
+export function writeCanvasDocument(frame: HTMLIFrameElement, controller: EditorController, snapshot: EditorSnapshot, baseUrl?: string) {
   const writableDoc = frame.contentDocument;
   if (!writableDoc) return null;
   writableDoc.open();
-  writableDoc.write(hardenRuntimeHtml(snapshot.projection.html));
+  writableDoc.write(hardenRuntimeHtml(snapshot.projection.html, { baseUrl }));
   writableDoc.close();
 
   // WebKit may replace the iframe Document during document.open()/write().

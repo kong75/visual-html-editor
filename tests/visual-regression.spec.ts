@@ -56,12 +56,30 @@ test('editor toolbar visual structure remains stable', async ({ page }) => {
   });
 });
 
-test('selected text inspector visual structure remains stable', async ({ page }) => {
+test('selected element inspector visual structure remains stable', async ({ page }) => {
   await page.goto('/#/editor');
   await page.frameLocator('iframe[title="Visual HTML canvas"]').locator('h1').click();
   await expect(page.locator('.vhe-inspector__title code')).toHaveText('h1');
   await stabilizeVisuals(page);
   await expect(page.locator('.vhe-inspector')).toHaveScreenshot('selected-text-inspector.png', {
+    animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.04
+  });
+});
+
+test('inline selected-text toolbar remains visually coherent', async ({ page }) => {
+  await page.goto('/#/editor');
+  const heading = page.frameLocator('iframe[title="Visual HTML canvas"]').locator('h1');
+  await heading.click();
+  await heading.press('Home');
+  for (let index = 0; index < 12; index += 1) await heading.press('Shift+ArrowRight');
+  const toolbar = page.getByRole('region', { name: 'Selected text formatting' });
+  await expect(toolbar).toBeVisible();
+  await page.getByRole('button', { name: 'More text options' }).click();
+  await stabilizeVisuals(page);
+  await expect(toolbar).toHaveScreenshot('inline-selected-text-toolbar.png', {
+    animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.04
+  });
+  await expect(page.getByLabel('More selected text options')).toHaveScreenshot('inline-selected-text-more.png', {
     animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.04
   });
 });

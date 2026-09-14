@@ -13,6 +13,14 @@ export interface TextRange {
 
 export type InlineMark = 'strong' | 'em' | 'u' | 's';
 
+export type InlineTextStyleProperty =
+  | 'font-family'
+  | 'font-size'
+  | 'font-weight'
+  | 'color'
+  | 'line-height'
+  | 'letter-spacing';
+
 export interface SourceFile {
   id: FileId;
   path: string;
@@ -120,6 +128,12 @@ export type EditorCommand =
   | { type: 'setText'; nodeKey: NodeKey; text: string }
   | { type: 'setRichText'; nodeKey: NodeKey; html: string }
   | { type: 'toggleInlineMark'; nodeKey: NodeKey; range: TextRange; mark: InlineMark }
+  | {
+      type: 'setInlineStyles';
+      nodeKey: NodeKey;
+      range: TextRange;
+      styles: Readonly<Partial<Record<InlineTextStyleProperty, string>>>;
+    }
   | { type: 'setAttribute'; nodeKey: NodeKey; name: string; value: string | null }
   | { type: 'setStyle'; nodeKey: NodeKey; property: string; value: string | null }
   | { type: 'setStyles'; nodeKey: NodeKey; styles: Readonly<Record<string, string | null>> }

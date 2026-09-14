@@ -8,6 +8,11 @@ export const RUNTIME_CONTENT_SECURITY_POLICY = [
   "form-action 'none'"
 ].join('; ');
 
+export interface RuntimeHtmlOptions {
+  /** Absolute HTTP(S) URL used only to resolve relative preview assets. */
+  baseUrl?: string;
+}
+
 const blockedTags = new Set(['script', 'iframe', 'frame', 'frameset', 'object', 'embed', 'base']);
 const urlAttributes = new Set(['href', 'src', 'action', 'formaction', 'xlink:href']);
 
@@ -48,10 +53,21 @@ function hardenNode(node: any): void {
  * Builds an inert browser preview from an untrusted runtime projection.
  * Canonical source is never changed; normalization only affects the iframe copy.
  */
-export function hardenRuntimeHtml(source: string): string {
+export function hardenRuntimeHtml(source: string, options: RuntimeHtmlOptions = {}): string {
   const document = parse(source);
   hardenNode(document);
   const html = serialize(document);
-  const policy = `<meta http-equiv="Content-Security-Policy" content="${RUNTIME_CONTENT_SECURITY_POLICY}">`;
-  return html.replace(/<head([^>]*)>/i, `<head$1>${policy}`);
+  let policy = RUNTIME_CONTENT_SECURITY_POLICY;
+  let previewBase = '';
+  if (options.baseUrl) {
+    const parsed = new URL(options.baseUrl);
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      throw new TypeError('Preview baseUrl must use http: or https:.');
+    }
+    const escapedBaseUrl = options.baseUrl.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;');
+    previewBase = `<base href="${escapedBaseUrl}">`;
+    policy = policy.replace("base-uri 'none'", `base-uri ${parsed.origin}`);
+  }
+  const policyMeta = `<meta http-equiv="Content-Security-Policy" content="${policy}">`;
+  return html.replace(/<head([^>]*)>/i, `<head$1>${policyMeta}${previewBase}`);
 }

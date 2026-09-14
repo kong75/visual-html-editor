@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { EditorController } from '@visual-html/core';
 import { DeckController, exportClaudeDesignDeck, importClaudeDesignDeck, type DeckSnapshot } from '@visual-html/deck';
-import { DeckNavigator, VisualHtmlEditor, type HtmlImportAdapter } from '@visual-html/react';
+import { DeckNavigator, VisualHtmlEditor, type HtmlImportAdapter, type VisualHtmlEditorHandle } from '@visual-html/react';
 import { showcaseProfiles, showcaseSlidesDeck, type ProfileId } from './samples';
 import { BrandMark } from '../../../packages/react/src/brand-mark';
 
@@ -22,7 +22,10 @@ function downloadHtml(html: string, filename: string): void {
 }
 
 export function EditorPage() {
-  const [profileId, setProfileId] = useState<ProfileId>('email');
+  const initialParams = useMemo(() => new URLSearchParams(window.location.hash.split('?')[1] ?? ''), []);
+  const requestedProfile = initialParams.get('profile');
+  const [profileId, setProfileId] = useState<ProfileId>(requestedProfile === 'email' || requestedProfile === 'slides' || requestedProfile === 'web' ? requestedProfile : 'email');
+  const [showImportPrompt, setShowImportPrompt] = useState(initialParams.get('import') === '1');
   const [controllerState, setControllerState] = useState<ControllerState | null>(null);
   const [deckController, setDeckController] = useState<DeckController | null>(null);
   const [deckSnapshot, setDeckSnapshot] = useState<DeckSnapshot | null>(null);
@@ -30,6 +33,7 @@ export function EditorPage() {
   const [exportMessage, setExportMessage] = useState<string | null>(null);
   const [deckWorkspaceEpoch, setDeckWorkspaceEpoch] = useState(0);
   const controllerCacheRef = useRef(new Map<string, EditorController>());
+  const editorRef = useRef<VisualHtmlEditorHandle>(null);
   const selected = showcaseProfiles[profileId];
   const activeSlideId = deckSnapshot?.activeSlideId;
 
@@ -185,7 +189,15 @@ export function EditorPage() {
         {exportMessage && <div className="editor-page__export" role="status">{exportMessage}</div>}
         {controllerState ? (
           <div className="editor-page__surface">
+            {showImportPrompt && (
+              <section className="editor-page__import-prompt" aria-label="Try your own HTML">
+                <div><strong>Try your own HTML</strong><p>Choose an email, learning resource, presentation, or web page. Review compatibility before it replaces the example.</p></div>
+                <button type="button" className="vhe-button" onClick={() => editorRef.current?.openImportPicker()}>Choose HTML file</button>
+                <button type="button" className="editor-page__import-dismiss" aria-label="Dismiss import prompt" onClick={() => setShowImportPrompt(false)}>×</button>
+              </section>
+            )}
             <VisualHtmlEditor
+              ref={editorRef}
               controller={controllerState.controller}
               brandHref="#"
               documentTitle={controllerState.profileId === 'slides' ? deckSnapshot?.deck.title ?? 'HTML Deck' : selected.profile.label}

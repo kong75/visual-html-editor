@@ -180,6 +180,25 @@ describe('command planning policy and failure paths', () => {
       .toMatchObject({ ok: false, code: 'invalid-text-range' });
   });
 
+  it('enforces capabilities and policy for selected-text styles', () => {
+    const command = (index: DocumentIndex) => ({
+      type: 'setInlineStyles' as const,
+      nodeKey: node(index, 'p').key,
+      range: { start: 0, end: 1 },
+      styles: { color: '#7c3aed' }
+    });
+    expect(plan('<p>x</p>', command, disabled('editStyles')))
+      .toMatchObject({ ok: false, code: 'capability-denied' });
+    const noSpan = extendEditorProfile(webProfile, {
+      id: 'no-span', html: { allowedTags: webProfile.html.allowedTags.filter((tag) => tag !== 'span') }
+    });
+    expect(plan('<p>x</p>', command, noSpan)).toMatchObject({ ok: false, code: 'policy-denied' });
+    expect(plan('<p>x</p>', (index) => ({
+      type: 'setInlineStyles', nodeKey: node(index, 'p').key, range: { start: 0, end: 1 },
+      styles: { color: 'url(javascript:alert(1))' }
+    }))).toMatchObject({ ok: false, code: 'policy-denied' });
+  });
+
   it.each(['onclick', 'unknown'])('rejects disallowed %s attributes', (name) => {
     expect(plan('<p>x</p>', (index) => ({ type: 'setAttribute', nodeKey: node(index, 'p').key, name, value: 'x' })))
       .toMatchObject({ ok: false, code: 'policy-denied' });

@@ -31,6 +31,17 @@ test('passes automated accessibility audit for the selected-element inspector', 
   await expectNoSeriousAccessibilityViolations(page);
 });
 
+test('passes automated accessibility audit for selected-text formatting', async ({ page }) => {
+  await page.goto('/#/editor');
+  const heading = page.frameLocator('iframe[title="Visual HTML canvas"]').locator('h1');
+  await heading.click();
+  await heading.press('Home');
+  for (let index = 0; index < 12; index += 1) await heading.press('Shift+ArrowRight');
+  await page.getByRole('button', { name: 'More text options' }).click();
+  await expect(page.getByLabel('More selected text options')).toBeVisible();
+  await expectNoSeriousAccessibilityViolations(page);
+});
+
 test('passes automated accessibility audit for source mode', async ({ page }) => {
   await page.goto('/#/editor');
   await page.getByRole('button', { name: 'Source' }).click();

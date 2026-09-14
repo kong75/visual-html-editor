@@ -7,15 +7,17 @@ export { useEditorSnapshot } from './use-editor-snapshot.js';
 export { useHtmlEditor } from './use-html-editor.js';
 export type { DeckNavigatorProps } from './deck-navigator.js';
 export type { ElementBehavior, ElementBehaviorContext, ElementBehaviorResolver, ElementEditTarget } from './element-behavior.js';
-export type { HtmlEditorProps } from './html-editor.js';
+export type { HtmlEditorHandle, HtmlEditorProps } from './html-editor.js';
 export type { HtmlEditorChange, UseHtmlEditorOptions, UseHtmlEditorResult } from './use-html-editor.js';
 export type {
   AssetAdapter,
   EditorSelectionChange,
+  EditorTextSelection,
   HtmlImportAdapter,
   HtmlImportInput,
   HtmlImportPreview,
   HtmlImportResult,
   ResolvedAsset,
+  VisualHtmlEditorHandle,
   VisualHtmlEditorProps
 } from './visual-html-editor.js';

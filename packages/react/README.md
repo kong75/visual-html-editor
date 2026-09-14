@@ -16,11 +16,33 @@ import '@visual-html/react/styles.css';
 
 Use `VisualHtmlEditor` when the host owns an `EditorController` directly. Use `HtmlEditor` or `useHtmlEditor` for a managed React lifecycle.
 
-The package includes the visual canvas, component selector, contextual inspector, mixed-text wording and Bold editing, reviewed HTML import, source mode, image adapter support, transaction-level callbacks, and optional `DeckNavigator`.
+Keep an `HtmlEditorHandle` ref and call `flush()` before saving, navigation, or close. It commits active inline typing and waits for asynchronous `onChange` callbacks. Pass `baseUrl` to resolve relative preview assets without changing exported source. Toggle `readOnly` to keep preview, selection, and outline available while disabling editing.
+
+The package includes the visual canvas, component selector, contextual inspector, mixed-text wording and selected-range formatting, reviewed HTML import, source mode, image adapter support, transaction-level callbacks, and optional `DeckNavigator`.
 
 When `profile.capabilities.importHtml` is enabled, the default import flow accepts `.html` and `.htm` files up to 5 MB, previews policy issues, confirms destructive replacement, and records the replacement as one undoable transaction. Supply an `HtmlImportAdapter` when the host needs to parse and apply a specialized format such as a multi-slide deck.
 
-Type, delete, and paste plain text normally inside paragraphs and headings that contain mixed inline styles. Select text to enable Bold in the editing toolbar; `Ctrl/Cmd+B` is supported without adding a floating canvas toolbar.
+Type, delete, and paste plain text normally inside paragraphs and headings that contain mixed inline styles. Selecting text opens a compact toolbar beside the range for emphasis, font, size, and color. Additional weight, line-height, and tracking controls are available under **More**; block alignment remains in the element inspector.
+
+Hosts can observe the live range and build custom formatting UI with `onTextSelectionChange`. The editor handle applies formatting to that range and restores the browser selection after each source transaction:
+
+```tsx
+<HtmlEditor
+  ref={editorRef}
+  value={html}
+  profile={webProfile}
+  onTextSelectionChange={(selection) => {
+    if (selection) selectionRef.current = selection;
+  }}
+/>
+
+await editorRef.current?.toggleSelectedTextMark('strong', selectionRef.current);
+await editorRef.current?.setSelectedTextStyles(
+  { color: '#7c3aed', 'font-size': '24px' },
+  selectionRef.current
+);
+const selection = editorRef.current?.getTextSelection();
+```
 
 Host applications can inject product-specific controls into the top row with `toolbarContent` and contextual inspector content with `sidebarHeader`.
 
@@ -34,4 +56,4 @@ This package is in private alpha preparation and has not been published to npm. 
 
 React and React DOM support `^18.2.0 || ^19.0.0`; keep their versions aligned. Import `@visual-html/react/styles.css` in the host application.
 
-See the [integration guides](https://github.com/kong75/visual-html-editor/tree/main/docs), [compatibility policy](https://github.com/kong75/visual-html-editor/blob/main/docs/compatibility.md), and [release notes](https://github.com/kong75/visual-html-editor/blob/main/CHANGELOG.md). Repository links require collaborator access while the source is private.
+See the [integration lifecycle](https://github.com/kong75/visual-html-editor/blob/main/docs/integration-lifecycle.md), [HTML compatibility matrix](https://github.com/kong75/visual-html-editor/blob/main/docs/html-compatibility.md), and [release notes](https://github.com/kong75/visual-html-editor/blob/main/CHANGELOG.md). Repository links require collaborator access while the source is private.

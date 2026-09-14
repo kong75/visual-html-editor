@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   EditorController,
   type EditorProfile,
@@ -18,7 +18,7 @@ export interface UseHtmlEditorOptions {
   value: string;
   profile: EditorProfile;
   externalUpdate?: ExternalSourceUpdatePolicy;
-  onChange?: (change: HtmlEditorChange) => void;
+  onChange?: (change: HtmlEditorChange) => void | Promise<void>;
   onValidationChange?: (issues: readonly ValidationIssue[]) => void;
   onDirtyChange?: (dirty: boolean) => void;
   onReady?: (controller: EditorController) => void;
@@ -30,6 +30,8 @@ export interface UseHtmlEditorResult {
   controller: EditorController | null;
   status: 'loading' | 'ready' | 'error';
   error: Error | null;
+  /** Waits for every previously emitted onChange callback to settle. */
+  flushChanges(): Promise<void>;
 }
 
 interface CallbackSet {
@@ -59,6 +61,8 @@ export function useHtmlEditor({
   const initialProfileRef = useRef(profile);
   const externalUpdateVersionRef = useRef(0);
   const callbacksRef = useRef<CallbackSet>({});
+  const changeQueueRef = useRef<Promise<void>>(Promise.resolve());
+  const changeErrorRef = useRef<Error | null>(null);
   callbacksRef.current = {
     onChange,
     onValidationChange,
@@ -82,10 +86,20 @@ export function useHtmlEditor({
         createdController.on('transactionCommitted', (transaction) => {
           if (transaction.kind === 'source-replacement' && !transaction.command) return;
           const snapshot = createdController.getSnapshot();
-          callbacksRef.current.onChange?.({
+          const handler = callbacksRef.current.onChange;
+          const change = {
             html: snapshot.html,
             revision: snapshot.revision,
             transaction
+          };
+          const task = changeQueueRef.current.catch(() => undefined).then(async () => {
+            await handler?.(change);
+          });
+          changeQueueRef.current = task;
+          void task.catch((reason: unknown) => {
+            const nextError = reason instanceof Error ? reason : new Error('Unable to persist an HTML change.');
+            changeErrorRef.current ??= nextError;
+            try { callbacksRef.current.onError?.(nextError); } catch { /* Preserve the original persistence error for flush(). */ }
           });
         }),
         createdController.on('validationChanged', (event) => {
@@ -140,5 +154,16 @@ export function useHtmlEditor({
     });
   }, [controller, externalUpdate, value]);
 
-  return { controller, status, error };
+  const flushChanges = useCallback(async () => {
+    try {
+      await changeQueueRef.current;
+    } catch (reason) {
+      changeErrorRef.current ??= reason instanceof Error ? reason : new Error('Unable to persist an HTML change.');
+    }
+    const pendingError = changeErrorRef.current;
+    changeErrorRef.current = null;
+    if (pendingError) throw pendingError;
+  }, []);
+
+  return { controller, status, error, flushChanges };
 }

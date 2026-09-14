@@ -55,9 +55,10 @@ export type { CreateEditorControllerOptions } from './controller.js';
 export { defineEditorProfile, editorProfiles, emailProfile, extendEditorProfile, slidesProfile, webProfile } from './profiles.js';
 export { RUNTIME_NODE_ATTRIBUTE } from './projection.js';
 export { hardenRuntimeHtml, RUNTIME_CONTENT_SECURITY_POLICY } from './runtime-security.js';
-export { RichTextRangeError, toggleInlineMarkInHtml } from './rich-text.js';
-export type { InlineMarkTransform } from './rich-text.js';
-export type { AspectRatioOption, CommandFailure, CommandResult, CommandSuccess, DocumentIndex, EditorCapabilities, EditorCommand, EditorEvent, EditorEventBase, EditorEventMap, EditorEventType, EditorProfile, EditorProfileOverrides, EditorSnapshot, EditorTransactionKind, ExternalSourceUpdatePolicy, ExportResult, FatalErrorEvent, FileId, HtmlPolicy, InlineMark, NodeKey, ParsedAttribute, ParsedNode, RuntimeProjection, ReplaceSourceOptions, RevisionChangedEvent, SourceFile, SourcePatch, SourceReplacementResult, SourceReplacementSuccess, SourceRange, TextRange, TransactionCommittedEvent, TransactionRejectedEvent, DirtyChangedEvent, ProfileChangedEvent, ValidationChangedEvent, ValidationIssue, WorkspaceSnapshot } from './types.js';
+export type { RuntimeHtmlOptions } from './runtime-security.js';
+export { RichTextRangeError, setInlineStylesInHtml, toggleInlineMarkInHtml } from './rich-text.js';
+export type { InlineMarkTransform, InlineStyleTransform } from './rich-text.js';
+export type { AspectRatioOption, CommandFailure, CommandResult, CommandSuccess, DocumentIndex, EditorCapabilities, EditorCommand, EditorEvent, EditorEventBase, EditorEventMap, EditorEventType, EditorProfile, EditorProfileOverrides, EditorSnapshot, EditorTransactionKind, ExternalSourceUpdatePolicy, ExportResult, FatalErrorEvent, FileId, HtmlPolicy, InlineMark, InlineTextStyleProperty, NodeKey, ParsedAttribute, ParsedNode, RuntimeProjection, ReplaceSourceOptions, RevisionChangedEvent, SourceFile, SourcePatch, SourceReplacementResult, SourceReplacementSuccess, SourceRange, TextRange, TransactionCommittedEvent, TransactionRejectedEvent, DirtyChangedEvent, ProfileChangedEvent, ValidationChangedEvent, ValidationIssue, WorkspaceSnapshot } from './types.js';
 
 // File: dist/profiles.d.ts
 import type { EditorProfile, EditorProfileOverrides } from './types.js';
@@ -78,7 +79,7 @@ export declare const RUNTIME_NODE_ATTRIBUTE = "data-vhe-node";
 export declare function buildRuntimeProjection(source: string, index: DocumentIndex): RuntimeProjection;
 
 // File: dist/rich-text.d.ts
-import type { InlineMark, TextRange } from './types.js';
+import type { InlineMark, InlineTextStyleProperty, TextRange } from './types.js';
 export interface RichTextSourceEdit {
     start: number;
     end: number;
@@ -89,20 +90,29 @@ export interface InlineMarkTransform {
     active: boolean;
     action: 'add' | 'remove';
 }
+export interface InlineStyleTransform {
+    html: string;
+}
 export declare class RichTextRangeError extends Error {
     constructor(message: string);
 }
 export declare function isInlineMarkTag(tagName: string, mark: InlineMark): boolean;
 export declare function richTextSourceEdits(source: string, edited: string): RichTextSourceEdit[] | null;
 export declare function toggleInlineMarkInHtml(source: string, range: TextRange, mark: InlineMark): InlineMarkTransform;
+/** Apply CSS typography to a rendered-text range without normalizing unrelated HTML. */
+export declare function setInlineStylesInHtml(source: string, range: TextRange, styles: Readonly<Partial<Record<InlineTextStyleProperty, string>>>): InlineStyleTransform;
 
 // File: dist/runtime-security.d.ts
 export declare const RUNTIME_CONTENT_SECURITY_POLICY: string;
+export interface RuntimeHtmlOptions {
+    /** Absolute HTTP(S) URL used only to resolve relative preview assets. */
+    baseUrl?: string;
+}
 /**
  * Builds an inert browser preview from an untrusted runtime projection.
  * Canonical source is never changed; normalization only affects the iframe copy.
  */
-export declare function hardenRuntimeHtml(source: string): string;
+export declare function hardenRuntimeHtml(source: string, options?: RuntimeHtmlOptions): string;
 
 // File: dist/types.d.ts
 export type FileId = string;
@@ -116,6 +126,7 @@ export interface TextRange {
     end: number;
 }
 export type InlineMark = 'strong' | 'em' | 'u' | 's';
+export type InlineTextStyleProperty = 'font-family' | 'font-size' | 'font-weight' | 'color' | 'line-height' | 'letter-spacing';
 export interface SourceFile {
     id: FileId;
     path: string;
@@ -221,6 +232,11 @@ export type EditorCommand = {
     nodeKey: NodeKey;
     range: TextRange;
     mark: InlineMark;
+} | {
+    type: 'setInlineStyles';
+    nodeKey: NodeKey;
+    range: TextRange;
+    styles: Readonly<Partial<Record<InlineTextStyleProperty, string>>>;
 } | {
     type: 'setAttribute';
     nodeKey: NodeKey;

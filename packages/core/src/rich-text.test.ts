@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { richTextSourceEdits, toggleInlineMarkInHtml } from './rich-text.js';
+import { richTextSourceEdits, setInlineStylesInHtml, toggleInlineMarkInHtml } from './rich-text.js';
 
 describe('source-preserving inline marks', () => {
   it('wraps a selected portion of plain text', () => {
@@ -32,6 +32,38 @@ describe('source-preserving inline marks', () => {
     expect(toggleInlineMarkInHtml('A &amp; B', { start: 2, end: 3 }, 'strong').html).toBe(
       'A <strong>&amp;</strong> B'
     );
+  });
+});
+
+describe('source-preserving inline styles', () => {
+  it('styles only the selected portion of plain text', () => {
+    expect(setInlineStylesInHtml('Hello world', { start: 6, end: 11 }, {
+      'font-size': '24px', color: '#7c3aed'
+    }).html).toBe('Hello <span style="font-size: 24px; color: #7c3aed">world</span>');
+  });
+
+  it('preserves nested inline markup and character references', () => {
+    expect(setInlineStylesInHtml('A &amp; <em>beautiful</em> world', { start: 2, end: 13 }, {
+      'letter-spacing': '0.04em'
+    }).html).toBe(
+      'A <span style="letter-spacing: 0.04em">&amp; </span><em><span style="letter-spacing: 0.04em">beautiful</span></em> world'
+    );
+  });
+
+  it('updates a fully selected style span instead of nesting another span', () => {
+    expect(setInlineStylesInHtml(
+      '<span class="accent" style="color: red">Hello</span> world',
+      { start: 0, end: 5 },
+      { color: 'blue', 'font-size': '20px' }
+    ).html).toBe('<span class="accent" style="color: blue; font-size: 20px">Hello</span> world');
+  });
+
+  it('keeps unselected text in an existing span unchanged', () => {
+    expect(setInlineStylesInHtml(
+      '<span style="color: red">Hello world</span>',
+      { start: 6, end: 11 },
+      { color: 'blue' }
+    ).html).toBe('<span style="color: red">Hello <span style="color: blue">world</span></span>');
   });
 });
 

@@ -4,7 +4,7 @@ The repository is currently private. **Public npm publication is deferred** unti
 
 ## Version policy
 
-Core, deck, and React use one coordinated version, including prerelease suffixes. The private root manifest uses the same version for tooling. The private showcase is not published and does not need a coordinated version.
+Core, deck, the editor CLI, and React use one coordinated version, including prerelease suffixes. The private root manifest uses the same version for tooling. The private showcase is not published and does not need a coordinated version.
 
 Use `0.1.0-alpha.1`, `0.1.0-alpha.2`, and so on for the first alpha cycle. Publish prereleases to the `next` dist-tag. Use `latest` only for a deliberately approved non-prerelease release. Breaking changes need migration notes even during `0.x`.
 
@@ -59,6 +59,7 @@ pnpm test:types
 
 - `visual-html-core-0.1.0-alpha.1.tgz`
 - `visual-html-deck-0.1.0-alpha.1.tgz`
+- `visual-html-editor-0.1.0-alpha.1.tgz`
 - `visual-html-react-0.1.0-alpha.1.tgz`
 
 Inspect each with `tar -tzf <tarball>` and `npm publish <tarball> --dry-run`. They should contain built code, declarations, README, license, and package metadata. Workspace dependencies must have been rewritten to the coordinated version. Preserve the verified tarballs as release-run artifacts.
@@ -71,9 +72,10 @@ The following commands are publication operations for an authorized public relea
 npm publish .artifacts/consumer-tests/tarballs/visual-html-core-0.1.0-alpha.1.tgz --access public --provenance --tag next
 npm publish .artifacts/consumer-tests/tarballs/visual-html-deck-0.1.0-alpha.1.tgz --access public --provenance --tag next
 npm publish .artifacts/consumer-tests/tarballs/visual-html-react-0.1.0-alpha.1.tgz --access public --provenance --tag next
+npm publish .artifacts/consumer-tests/tarballs/visual-html-editor-0.1.0-alpha.1.tgz --access public --provenance --tag next
 ```
 
-Core and deck are independent; publish both before React, which depends on them. Stop on the first failure. Do not run a recursive publish that obscures which packages succeeded.
+Core and deck are independent; publish both before React, which depends on them. Publish the bundled editor CLI after React. Stop on the first failure. Do not run a recursive publish that obscures which packages succeeded.
 
 ## Verify the registry release
 
@@ -81,13 +83,15 @@ Core and deck are independent; publish both before React, which depends on them.
 npm view @visual-html/core@0.1.0-alpha.1 version dist.integrity repository
 npm view @visual-html/deck@0.1.0-alpha.1 version dist.integrity repository
 npm view @visual-html/react@0.1.0-alpha.1 version dist.integrity repository
+npm view @visual-html/editor@0.1.0-alpha.1 version dist.integrity repository bin
 npm view @visual-html/react@0.1.0-alpha.1 dependencies
 npm view @visual-html/core dist-tags
 npm view @visual-html/deck dist-tags
 npm view @visual-html/react dist-tags
+npm view @visual-html/editor dist-tags
 ```
 
-Use a new directory outside the monorepo to install the registry versions together with matching React and React DOM versions. Run the core/deck scenario from `tests/consumers/runtime/index.mjs`, then compile and run the React/Vite consumer using registry versions instead of tarball placeholders. Verify the editor stylesheet, public type imports, an edit, and export. Confirm provenance appears on npm. Create release notes from the versioned changelog and link the exact Git tag only after all three packages are usable.
+Use a new directory outside the monorepo to install the registry versions together with matching React and React DOM versions. Run the core/deck scenario from `tests/consumers/runtime/index.mjs`, then compile and run the React/Vite consumer using registry versions instead of tarball placeholders. Run `npx @visual-html/editor ./document.html --no-open` against a disposable document and verify load, relative assets, and explicit save. Confirm provenance appears on npm. Create release notes from the versioned changelog and link the exact Git tag only after all four packages are usable.
 
 ## Partial-publication recovery
 
@@ -103,5 +107,5 @@ Publication is not atomic across packages, and a published version cannot simply
 
 4. If an existing package matches, skip it and publish only the missing packages from the same verified artifacts, in order. Fix authentication or transient registry failures before retrying.
 5. If source, dependencies, or package contents must change, prepare a new coordinated version and release commit. Do not retag the old commit or try to overwrite an existing version. Document the incomplete prerelease and complete registry verification for its replacement.
-6. If a dist-tag was changed incorrectly, restore it explicitly to the last known complete release with `npm dist-tag add @visual-html/<package>@<known-version> next`. Verify all three tags before announcing completion.
+6. If a dist-tag was changed incorrectly, restore it explicitly to the last known complete release with `npm dist-tag add @visual-html/<package>@<known-version> next`. Verify all four tags before announcing completion.
 

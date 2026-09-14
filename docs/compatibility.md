@@ -2,7 +2,7 @@
 
 ## Package runtime and module format
 
-All three packages require Node.js **20.19.0 or newer** for Node execution and
+All four packages require Node.js **20.19.0 or newer** for Node execution and
 installation. The `entities` dependency used by the parsers requires this minimum;
 the former Node 18 declaration was inaccurate. This is a metadata correction made
 before the first public release.

@@ -108,6 +108,36 @@ importers:
         specifier: ^8.0.1
         version: 8.0.1
 
+  packages/editor:
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.18
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.2.4
+        version: 19.2.4(@types/react@19.2.18)
+      '@visual-html/core':
+        specifier: workspace:*
+        version: link:../core
+      '@visual-html/react':
+        specifier: workspace:*
+        version: link:../react
+      '@vitejs/plugin-react':
+        specifier: ^6.0.5
+        version: 6.0.5(vite@8.2.1(@types/node@26.2.0))
+      react:
+        specifier: ^19.2.0
+        version: 19.2.8
+      react-dom:
+        specifier: ^19.2.0
+        version: 19.2.8(react@19.2.8)
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vite:
+        specifier: ^8.2.1
+        version: 8.2.1(@types/node@26.2.0)
+
   packages/react:
     dependencies:
       '@base-ui/react':

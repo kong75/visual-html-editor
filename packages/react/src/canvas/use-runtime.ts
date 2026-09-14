@@ -8,14 +8,15 @@ import { syncRuntimeSelection } from './selection.js';
 
 interface CanvasRuntimeOptions extends Omit<CanvasRuntimeContext, 'frame' | 'doc' | 'attrs'> {
   mode: 'visual' | 'source';
+  baseUrl?: string;
   refreshPropertyDrafts: () => void;
 }
 
-export function useCanvasRuntime({ controller, snapshot, outlineNodes, elementBehaviorResolversRef, selection, textEditing, setNotice, mode, refreshPropertyDrafts }: CanvasRuntimeOptions) {
+export function useCanvasRuntime({ controller, snapshot, outlineNodes, elementBehaviorResolversRef, selection, textEditing, setNotice, mode, baseUrl, refreshPropertyDrafts }: CanvasRuntimeOptions) {
   useEffect(() => {
     const frame = selection.iframeRef.current;
     if (!frame || mode !== 'visual') return;
-    const documentState = writeCanvasDocument(frame, controller, snapshot);
+    const documentState = writeCanvasDocument(frame, controller, snapshot, baseUrl);
     if (!documentState) return;
     const { doc } = documentState;
     const context = { frame, ...documentState, controller, snapshot, outlineNodes, elementBehaviorResolversRef, selection, textEditing, setNotice };
@@ -56,5 +57,5 @@ export function useCanvasRuntime({ controller, snapshot, outlineNodes, elementBe
       pointer.dispose();
       listeners.forEach((remove) => remove());
     };
-  }, [controller, mode, outlineNodes, elementBehaviorResolversRef, selection, textEditing, setNotice, refreshPropertyDrafts, snapshot.profile, snapshot.projection.html, snapshot.projection.runtimeAttribute, snapshot.revision]);
+  }, [baseUrl, controller, mode, outlineNodes, elementBehaviorResolversRef, selection, textEditing, setNotice, refreshPropertyDrafts, snapshot.profile, snapshot.projection.html, snapshot.projection.runtimeAttribute, snapshot.revision]);
 }

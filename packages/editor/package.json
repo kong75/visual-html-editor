@@ -1,0 +1,36 @@
+{
+  "name": "@visual-html/editor",
+  "version": "0.1.0",
+  "description": "Open a local HTML file in Visual HTML Editor with one command.",
+  "license": "MIT",
+  "keywords": ["html", "editor", "wysiwyg", "cli", "visual"],
+  "type": "module",
+  "engines": { "node": ">=20.19.0" },
+  "bin": { "visual-html": "./bin/visual-html.mjs" },
+  "files": ["bin", "dist", "README.md", "LICENSE"],
+  "publishConfig": { "access": "public", "provenance": true },
+  "scripts": {
+    "build": "vite build",
+    "test": "node --test test/*.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "publint": "publint"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "@vitejs/plugin-react": "^6.0.5",
+    "@visual-html/core": "workspace:*",
+    "@visual-html/react": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kong75/visual-html-editor.git",
+    "directory": "packages/editor"
+  },
+  "homepage": "https://github.com/kong75/visual-html-editor/tree/main/packages/editor#readme",
+  "bugs": { "url": "https://github.com/kong75/visual-html-editor/issues" }
+}

@@ -11,9 +11,10 @@ interface EditorFilesOptions extends Pick<VisualHtmlEditorProps, 'assetAdapter' 
   selectedNode: ParsedNode | undefined;
   setNotice: (message: string | null) => void;
   run: (operation: Promise<{ ok: boolean; message?: string }>) => Promise<boolean>;
+  beforeExport: () => Promise<void>;
 }
 
-export function useEditorFiles({ controller, snapshot, selectedKey, selectedNode, assetAdapter, onExport, onExportRequest, setNotice, run }: EditorFilesOptions) {
+export function useEditorFiles({ controller, snapshot, selectedKey, selectedNode, assetAdapter, onExport, onExportRequest, setNotice, run, beforeExport }: EditorFilesOptions) {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const handleImage = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -48,6 +49,7 @@ export function useEditorFiles({ controller, snapshot, selectedKey, selectedNode
 
   const exportHtml = useCallback(async () => {
     try {
+      await beforeExport();
       const result = await controller.export();
       const blocking = result.issues.filter((issue) => issue.severity === 'blocking');
       if (blocking.length > 0) {
@@ -63,7 +65,7 @@ export function useEditorFiles({ controller, snapshot, selectedKey, selectedNode
     } catch (error) {
       setNotice(error instanceof Error ? error.message : 'HTML export failed.');
     }
-  }, [controller, onExport, onExportRequest, snapshot.profile.id]);
+  }, [beforeExport, controller, onExport, onExportRequest, snapshot.profile.id]);
 
   return { imageInputRef, handleImage, exportHtml };
 }

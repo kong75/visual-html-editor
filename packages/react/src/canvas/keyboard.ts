@@ -16,14 +16,17 @@ export function createCanvasKeyboard(context: CanvasRuntimeContext) {
       void runHistory(keyName === 'y' || event.shiftKey ? 'redo' : 'undo');
       return;
     }
-    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'b') {
+    const shortcutMark = (event.ctrlKey || event.metaKey)
+      ? ({ b: 'strong', i: 'em', u: 'u' } as const)[keyName as 'b' | 'i' | 'u']
+      : undefined;
+    if (shortcutMark) {
       const nativeSelection = readRichTextSelection(doc, controller, outlineNodes, elementBehaviorResolversRef.current);
       const rememberedSelection = richTextSelectionRef.current;
       const targetKey = target?.closest<HTMLElement>(`[${attrs.node}]`)?.getAttribute(attrs.node);
       const selection = nativeSelection ?? (rememberedSelection?.nodeKey === targetKey ? rememberedSelection : null);
       if (selection) {
         event.preventDefault();
-        void toggleInlineMark('strong', selection);
+        void toggleInlineMark(shortcutMark, selection);
         return;
       }
     }

@@ -21,7 +21,7 @@
     "test:consumers": "pnpm build && node scripts/test-consumers.mjs",
     "test:api": "pnpm build && node scripts/check-public-api.mjs",
     "api:update": "pnpm build && node scripts/check-public-api.mjs --update",
-    "lint:packages": "pnpm --filter @visual-html/core --filter @visual-html/deck --filter @visual-html/react publint",
+    "lint:packages": "pnpm --filter @visual-html/core --filter @visual-html/deck --filter @visual-html/editor --filter @visual-html/react publint",
     "test:types": "pnpm --filter @visual-html/core --filter @visual-html/deck --filter @visual-html/react attw",
     "check": "pnpm check:versions && pnpm check:docs && pnpm test:tooling && pnpm typecheck && pnpm test && pnpm build && pnpm lint:packages",
     "release:check": "pnpm check && pnpm test:coverage && pnpm test:types && pnpm test:api && pnpm test:consumers && pnpm test:runtime && pnpm test:e2e:packed && pnpm test:e2e:all",

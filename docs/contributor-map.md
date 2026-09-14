@@ -16,6 +16,7 @@ change belongs without requiring a read of the original design documents.
 | Inline text and keyboard history | `packages/react/src/canvas/rich-text.ts`, `canvas/keyboard.ts`, `canvas/use-text-editing.ts`, `canvas/text-edit-history.ts` | WYSIWYG/history and keyboard accessibility scenarios |
 | Inspector controls and drafts | `packages/react/src/inspector/use-properties.ts`, `inspector/controls.tsx`, `inspector/body.tsx`, `inspector/values.ts` | Selected-element, resilience, and visual scenarios |
 | Imports and file actions | `packages/react/src/import/use-html-import.ts`, `import/html-import-dialog.tsx`, `workspace/use-files.ts` | HTML/deck import, resilience, and keyboard tests |
+| Local-file CLI | `packages/editor/bin/visual-html-server.mjs`, `packages/editor/src/main.tsx` | CLI server tests, build, package lint, and packed-size checks |
 | Deck operations | `packages/deck/src/controller.ts`, `serialization.ts` | Deck tests and packed runtime consumer |
 | Host showcase | `apps/showcase/src` | Showcase/demo/browser scenarios |
 | Packaging and release checks | `scripts`, `.github/workflows`, `tests/consumers` | `pnpm release:check` and CI |

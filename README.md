@@ -4,7 +4,7 @@
 
 Visual HTML brings visual editing to the HTML your product already has. Let users customize emails, presentations, learning materials, and web content directly—without needing to write code or rebuild content in a new format. Developers control what users can change, while the editor preserves untouched source and exports portable HTML that fits existing workflows.
 
-[Try it locally](#try-it-locally) · [Integrate with React](#embed-in-your-product) · [Documentation](#documentation) · [Contribute](#contributing)
+[Try your HTML](#try-your-own-html) · [Integrate with React](#embed-in-your-product) · [Documentation](#documentation) · [Contribute](#contributing)
 
 ![Visual HTML editing an HTML presentation, with slide navigation, a selected heading, and style controls.](./docs/images/visual-html-editor.png)
 
@@ -66,6 +66,16 @@ To try your own `.html` file, choose **Email** or **Web**, then **Import HTML**.
 
 The showcase runs locally without an account or a Visual HTML backend. Imported HTML may reference remote assets.
 
+### Try your own HTML
+
+After the npm package is published, open a real document without cloning this repository or adding a project dependency:
+
+```bash
+npx @visual-html/editor ./document.html
+```
+
+The command starts a temporary localhost editor, resolves relative assets from the document folder, and writes back only when you choose **Save file**. It does not install samples or change your project manifest. Until the first npm release, run the same CLI from this workspace with `pnpm --filter @visual-html/editor build` followed by `node packages/editor/bin/visual-html.mjs ./document.html`.
+
 ## Embed in your product
 
 Pass your HTML into the React workspace and receive the updated source after each committed edit:
@@ -92,6 +102,8 @@ export function ContentEditor({ initialHtml }: { initialHtml: string }) {
 
 This example keeps edits in React state. Your application handles persistence. Use `emailProfile` for email or `slidesProfile` for a fixed HTML canvas; add `@visual-html/deck` for a collection of slides.
 
+For save, navigation, or close boundaries, keep an `HtmlEditorHandle` ref and call `await editorRef.current.flush()`. It commits active typing and waits for asynchronous `onChange` handlers. `baseUrl` resolves relative preview assets without changing exported source, and `readOnly` switches the mounted editor into an inspectable preview. See the [React integration lifecycle](./docs/integration-lifecycle.md).
+
 The local showcase resolves these packages from workspace source. For a separate application before npm publication, follow the [local package integration guide](./docs/getting-started.md#try-the-packaged-react-integration).
 
 ### Configure what users can change
@@ -115,18 +127,19 @@ Pass `contentProfile` to `HtmlEditor`. Profiles also control HTML and CSS polici
 
 | Package | Use it for |
 | --- | --- |
+| [@visual-html/editor](./packages/editor/README.md) | A zero-install local-file trial with explicit save |
 | [@visual-html/react](./packages/react/README.md) | The ready-to-embed canvas, outline, inspector, and React lifecycle |
 | [@visual-html/core](./packages/core/README.md) | HTML source editing, policy validation, undo/redo, and export without React |
 | [@visual-html/deck](./packages/deck/README.md) | Ordered HTML slides, deck history, serialization, and format adapters |
 
 ## Current scope
 
-The alpha supports text editing within mixed inline markup, plain-text paste, Bold, style controls, image insertion and replacement, undo/redo, source editing, HTML import/export, and profile-specific viewports. Fixed-canvas editing includes movement, resizing, and selection of overlapping elements.
+The alpha supports text editing within mixed inline markup, plain-text paste, selected-range emphasis and typography, style controls, image insertion and replacement, undo/redo, source editing, HTML import/export, and profile-specific viewports. Fixed-canvas editing includes movement, resizing, and selection of overlapping elements.
 
 Evaluate your own documents against these boundaries:
 
-- **HTML compatibility:** the focus is static HTML and CSS. Runtime-generated React/Vue applications, arbitrary document scripts, and multi-file workspaces are outside the current scope. External stylesheet compatibility is limited.
-- **Formatting and layout:** additional inline formatting controls, rich clipboard paste, snapping, rotation, and multi-selection remain future work.
+- **HTML compatibility:** the focus is static HTML and CSS. Runtime-generated React/Vue applications and arbitrary document scripts are outside the current scope. Relative external stylesheets and assets can be resolved in preview with `baseUrl`.
+- **Formatting and layout:** link and list controls, rich clipboard paste, snapping, rotation, and multi-selection remain future work. Selected text supports semantic emphasis plus source-preserving font, size, weight, color, line-height, and tracking controls.
 - **Custom interfaces:** the React workspace is opinionated. The core can power another UI, but custom canvases currently need their own pointer and selection integration.
 - **Email rendering:** a browser preview does not guarantee email-client rendering. Keep your existing send validation and email-client testing.
 - **Validation:** import preserves disallowed source and reports issues; it does not sanitize it. The default UI blocks export on blocking issues. Headless integrations must check the issues returned by `export()` before publishing.
@@ -139,9 +152,7 @@ Start with the [documentation index](./docs/README.md).
 
 - [Getting started](./docs/getting-started.md) and [controlled React integration](./docs/controlled-react.md)
 - [Custom profiles](./docs/custom-profiles.md), [headless core](./docs/headless-core.md), and [slide decks](./docs/decks.md)
-- [Security model](./docs/security.md) and [compatibility](./docs/compatibility.md)
+- [Security model](./docs/security.md), [HTML compatibility matrix](./docs/html-compatibility.md), and [runtime compatibility](./docs/compatibility.md)
 - [Contributor map](./docs/contributor-map.md) and [implemented architecture](./ARCHITECTURE.md)
 - [Public declaration reference](./api/README.md) and [versioning](./docs/versioning.md)
 - [Roadmap](./ROADMAP.md), [release procedure](./RELEASING.md), and [public release checklist](./docs/public-release-checklist.md)
-
-

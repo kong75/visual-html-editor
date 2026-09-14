@@ -4,6 +4,7 @@
 
 - [Getting started](./getting-started.md)
 - [Controlled React integration](./controlled-react.md)
+- [React integration lifecycle](./integration-lifecycle.md)
 - [Email integration](./email-integration.md)
 - [Headless core](./headless-core.md)
 - [Custom profiles](./custom-profiles.md)
@@ -13,6 +14,7 @@
 - [Element behavior](./element-behavior.md)
 - [Security model](./security.md)
 - [Runtime and framework compatibility](./compatibility.md)
+- [HTML compatibility matrix](./html-compatibility.md)
 - [Versioning and API stability](./versioning.md)
 - [Public declaration reference](../api/README.md)
 

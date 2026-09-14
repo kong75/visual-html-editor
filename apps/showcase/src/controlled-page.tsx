@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { type EditorController, type ExternalSourceUpdatePolicy, webProfile } from '@visual-html/core';
-import { HtmlEditor, type AssetAdapter, type HtmlEditorChange } from '@visual-html/react';
+import { HtmlEditor, type AssetAdapter, type EditorTextSelection, type HtmlEditorChange, type HtmlEditorHandle } from '@visual-html/react';
 
 const initialHtml = `<!doctype html>
 <html>
@@ -37,10 +37,16 @@ export function ControlledPage() {
   const [dirty, setDirty] = useState(false);
   const [issueCount, setIssueCount] = useState(0);
   const [selectedTag, setSelectedTag] = useState('none');
+  const [textSelection, setTextSelection] = useState('none');
+  const [textApiResult, setTextApiResult] = useState('none');
   const [controllerId, setControllerId] = useState('loading');
   const [externalUpdate, setExternalUpdate] = useState<ExternalSourceUpdatePolicy>('replace');
   const [externalResult, setExternalResult] = useState('none');
+  const [readOnly, setReadOnly] = useState(false);
+  const [flushResult, setFlushResult] = useState('none');
   const controllerRef = useRef<EditorController | null>(null);
+  const editorRef = useRef<HtmlEditorHandle>(null);
+  const textSelectionRef = useRef<EditorTextSelection | null>(null);
 
   const handleChange = (change: HtmlEditorChange) => {
     setHtml(change.html);
@@ -55,15 +61,31 @@ export function ControlledPage() {
         <span data-testid="controlled-dirty">{dirty ? 'dirty' : 'clean'}</span>
         <span data-testid="controlled-issues">{issueCount} issues</span>
         <span data-testid="controlled-selection">{selectedTag}</span>
+        <span data-testid="controlled-text-selection">{textSelection}</span>
+        <span data-testid="controlled-text-api">{textApiResult}</span>
         <span data-testid="controlled-external-result">{externalResult}</span>
+        <span data-testid="controlled-flush">{flushResult}</span>
         <button type="button" onClick={() => { setExternalUpdate('replace'); setHtml(replacementHtml); }}>Replace externally</button>
         <button type="button" onClick={() => { setExternalUpdate('reject-when-dirty'); setHtml(rejectedHtml); }}>Reject external while dirty</button>
         <button type="button" onClick={() => { setExternalUpdate('replace-when-clean'); setHtml(ignoredHtml); }}>Ignore external while dirty</button>
         <button type="button" onClick={() => controllerRef.current?.createCheckpoint()}>Create checkpoint</button>
+        <button type="button" onClick={() => setReadOnly((current) => !current)}>{readOnly ? 'Enable editing' : 'Enable read-only'}</button>
+        <button type="button" onPointerDown={(event) => event.preventDefault()} onClick={async () => {
+          const result = await editorRef.current?.flush();
+          setFlushResult(result?.html.includes('Flushed inline value') && !result.html.includes('<base') ? 'latest clean value' : `revision ${result?.revision ?? 'none'}`);
+        }}>Flush changes</button>
+        <button type="button" onClick={async () => {
+          const applied = await editorRef.current?.setSelectedTextStyles({ color: '#7c3aed' }, textSelectionRef.current);
+          const current = editorRef.current?.getTextSelection();
+          setTextApiResult(applied && current ? `${current.range.start}-${current.range.end}` : 'unavailable');
+        }}>Style selection through API</button>
       </div>
       <HtmlEditor
+        ref={editorRef}
         value={html}
         profile={webProfile}
+        baseUrl="http://127.0.0.1:4173/fixtures/"
+        readOnly={readOnly}
         externalUpdate={externalUpdate}
         assetAdapter={controlledAssetAdapter}
         documentTitle="Controlled HTML"
@@ -71,6 +93,10 @@ export function ControlledPage() {
         onDirtyChange={setDirty}
         onValidationChange={(issues) => setIssueCount(issues.length)}
         onSelectionChange={({ node }) => setSelectedTag(node?.tagName ?? 'none')}
+        onTextSelectionChange={(selection) => {
+          if (selection) textSelectionRef.current = selection;
+          setTextSelection(selection ? `${selection.range.start}-${selection.range.end}` : 'none');
+        }}
         onExternalUpdateResult={(result) => {
           setExternalResult(result.ok
             ? result.replaced ? 'replaced' : result.reason ?? 'unchanged'

@@ -26,7 +26,7 @@ function fileDependency(filePath) {
 await rm(artifacts, { recursive: true, force: true });
 await mkdir(tarballs, { recursive: true });
 
-for (const packageName of ['core', 'deck', 'react']) {
+for (const packageName of ['core', 'deck', 'editor', 'react']) {
   run(['--dir', path.join(root, 'packages', packageName), 'pack', '--pack-destination', tarballs]);
 }
 
@@ -40,10 +40,11 @@ const resolveTarball = (packageName) => {
 const packed = {
   core: resolveTarball('core'),
   deck: resolveTarball('deck'),
+  editor: resolveTarball('editor'),
   react: resolveTarball('react')
 };
 
-const budgets = { core: 60_000, deck: 50_000, react: 120_000 };
+const budgets = { core: 60_000, deck: 50_000, editor: 850_000, react: 120_000 };
 for (const [packageName, filePath] of Object.entries(packed)) {
   const size = (await stat(filePath)).size;
   const budget = budgets[packageName];

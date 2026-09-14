@@ -72,6 +72,57 @@ describe('useHtmlEditor controlled lifecycle', () => {
     expect(latestChange).toHaveBeenCalledOnce();
   });
 
+  it('flushes asynchronous change handlers in transaction order', async () => {
+    let releaseFirst!: () => void;
+    const firstPending = new Promise<void>((resolve) => { releaseFirst = resolve; });
+    const order: string[] = [];
+    const onChange = vi.fn(async (change: import('./use-html-editor').HtmlEditorChange) => {
+      order.push(`start-${change.revision}`);
+      if (change.revision === 1) await firstPending;
+      order.push(`end-${change.revision}`);
+    });
+    const { result } = renderHook(() => useHtmlEditor(options({ onChange })));
+    await waitFor(() => expect(result.current.controller).not.toBeNull());
+    const controller = result.current.controller!;
+    const heading = controller.getSnapshot().nodes.find((node) => node.tagName === 'h1')!;
+
+    await act(async () => {
+      await controller.dispatch({ type: 'setText', nodeKey: heading.key, text: 'First' });
+      const nextHeading = controller.getSnapshot().nodes.find((node) => node.tagName === 'h1')!;
+      await controller.dispatch({ type: 'setText', nodeKey: nextHeading.key, text: 'Second' });
+    });
+    await waitFor(() => expect(order).toEqual(['start-1']));
+
+    let flushed = false;
+    const flush = result.current.flushChanges().then(() => { flushed = true; });
+    await Promise.resolve();
+    expect(flushed).toBe(false);
+    releaseFirst();
+    await flush;
+    expect(order).toEqual(['start-1', 'end-1', 'start-2', 'end-2']);
+  });
+
+  it('reports an earlier persistence failure at the next flush boundary', async () => {
+    const failure = new Error('Draft storage failed');
+    const onError = vi.fn();
+    const onChange = vi.fn()
+      .mockRejectedValueOnce(failure)
+      .mockResolvedValueOnce(undefined);
+    const { result } = renderHook(() => useHtmlEditor(options({ onChange, onError })));
+    await waitFor(() => expect(result.current.controller).not.toBeNull());
+    const controller = result.current.controller!;
+    const heading = controller.getSnapshot().nodes.find((node) => node.tagName === 'h1')!;
+
+    await act(async () => {
+      await controller.dispatch({ type: 'setText', nodeKey: heading.key, text: 'First' });
+      const nextHeading = controller.getSnapshot().nodes.find((node) => node.tagName === 'h1')!;
+      await controller.dispatch({ type: 'setText', nodeKey: nextHeading.key, text: 'Second' });
+    });
+    await expect(result.current.flushChanges()).rejects.toBe(failure);
+    expect(onError).toHaveBeenCalledWith(failure);
+    await expect(result.current.flushChanges()).resolves.toBeUndefined();
+  });
+
   it('reports a recorded user import while continuing to suppress external replacements', async () => {
     const onChange = vi.fn();
     const { result } = renderHook(() => useHtmlEditor(options({ onChange })));

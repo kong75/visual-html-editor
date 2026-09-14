@@ -9,9 +9,10 @@ This describes the implemented alpha. Start with the [contributor map](./docs/co
 | `packages/core` | HTML source, parsing, profiles, commands, transactions, history, validation, preview projection, and export | None |
 | `packages/deck` | Ordered standalone HTML slides, deck history, serialization, and the Claude Design adapter | None |
 | `packages/react` | React lifecycle bindings and the default editing workspace | Core and deck |
-| `apps/showcase` | Example host application, sample documents, and landing demo | Public exports of all three packages |
+| `packages/editor` | Localhost CLI shell for trying and explicitly saving a real HTML file | Bundled core and React workspace |
+| `apps/showcase` | Example host application, sample documents, and landing demo | Public exports of core, deck, and React |
 
-Core and deck have no React dependency. Deck manages slide documents; a host composes a core controller for each slide it edits. React depends on deck for its optional navigator. These are the three published packages; additional package splits require an ADR.
+Core and deck have no React dependency. Deck manages slide documents; a host composes a core controller for each slide it edits. React depends on deck for its optional navigator. The editor CLI bundles the browser workspace so a trial does not add runtime dependencies or sample content to the user's project. These are the four published packages; additional package splits require an ADR.
 
 ## Editing flow
 

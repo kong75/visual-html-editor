@@ -1,5 +1,6 @@
-import type { EditorController, InlineMark, NodeKey, ParsedNode, TextRange } from '@visual-html/core';
+import type { EditorController, InlineMark, InlineTextStyleProperty, NodeKey, ParsedNode, TextRange } from '@visual-html/core';
 import { resolveElementBehavior, type ElementBehaviorResolver } from '../element-behavior.js';
+import type { EditorTextSelection } from '../editor-types.js';
 import { runtimeAttributes } from './attributes.js';
 
 export interface RuntimeHitCandidate {
@@ -14,11 +15,11 @@ export interface RuntimePointerPoint {
   space: 'document' | 'parent';
 }
 
-export interface RichTextSelectionState {
-  nodeKey: NodeKey;
-  range: TextRange;
-  activeMarks: Readonly<Record<InlineMark, boolean>>;
-}
+export type RichTextSelectionState = EditorTextSelection;
+
+export const inlineTextStyleProperties: readonly InlineTextStyleProperty[] = [
+  'font-family', 'font-size', 'font-weight', 'color', 'line-height', 'letter-spacing'
+];
 
 export function queryRuntimeElement(frame: HTMLIFrameElement | null, key: NodeKey | null): HTMLElement | null {
   if (!frame || !key) return null;
@@ -139,6 +140,44 @@ function markActiveAcrossRange(root: HTMLElement, range: TextRange, aliases: rea
   return selectedLength > 0;
 }
 
+function stylesAcrossRange(
+  root: HTMLElement,
+  range: TextRange
+): Readonly<Record<InlineTextStyleProperty, string | null>> {
+  const values = Object.fromEntries(inlineTextStyleProperties.map((property) => [property, undefined])) as Record<
+    InlineTextStyleProperty,
+    string | null | undefined
+  >;
+  const doc = root.ownerDocument;
+  const walker = doc.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  let cursor = 0;
+  while (walker.nextNode()) {
+    const text = walker.currentNode as Text;
+    const start = cursor;
+    const end = start + text.data.length;
+    cursor = end;
+    if (Math.max(0, Math.min(end, range.end) - Math.max(start, range.start)) === 0) continue;
+    const textElement = text.parentElement ?? root;
+    const computed = doc.defaultView?.getComputedStyle(textElement);
+    for (const property of inlineTextStyleProperties) {
+      let authored = '';
+      let candidate: HTMLElement | null = textElement;
+      while (candidate && root.contains(candidate)) {
+        authored = candidate.style.getPropertyValue(property).trim();
+        if (authored || candidate === root) break;
+        candidate = candidate.parentElement;
+      }
+      const next = authored || computed?.getPropertyValue(property).trim() || '';
+      if (values[property] === undefined) values[property] = next;
+      else if (values[property] !== next) values[property] = null;
+    }
+  }
+  return Object.fromEntries(inlineTextStyleProperties.map((property) => [property, values[property] ?? null])) as Record<
+    InlineTextStyleProperty,
+    string | null
+  >;
+}
+
 export function readRichTextSelection(
   doc: Document,
   controller: EditorController,
@@ -173,7 +212,8 @@ export function readRichTextSelection(
       em: markActiveAcrossRange(region.element, range, ['em', 'i']),
       u: markActiveAcrossRange(region.element, range, ['u']),
       s: markActiveAcrossRange(region.element, range, ['s', 'del', 'strike'])
-    }
+    },
+    activeStyles: stylesAcrossRange(region.element, range)
   };
 }
 

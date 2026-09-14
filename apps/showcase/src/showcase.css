@@ -19,6 +19,12 @@ button { font: inherit; }
 .editor-page__workspace { position: relative; width: 100%; height: 100%; min-height: 0; }
 .editor-page__surface { position: relative; width: 100%; height: 100%; animation: editor-surface-in 220ms cubic-bezier(.2,.8,.2,1) both; }
 .editor-page__surface > .vhe-root { width: 100%; height: 100%; min-height: 0; border: 0; border-radius: 0; box-shadow: none; }
+.editor-page__import-prompt { position: absolute; z-index: 24; top: 72px; left: 50%; display: flex; width: min(620px, calc(100% - 40px)); align-items: center; gap: 16px; padding: 13px 42px 13px 16px; border: 1px solid #d9d2e4; border-radius: 10px; color: #3f3748; background: rgba(255,255,255,.97); box-shadow: 0 16px 42px rgba(40,31,54,.16); transform: translateX(-50%); }
+.editor-page__import-prompt > div { min-width: 0; flex: 1; }
+.editor-page__import-prompt strong { font-size: 12px; }
+.editor-page__import-prompt p { margin: 3px 0 0; color: #746b7d; font-size: 10px; line-height: 1.45; }
+.editor-page__import-prompt .vhe-button { flex: none; white-space: nowrap; }
+.editor-page__import-dismiss { position: absolute; top: 8px; right: 10px; padding: 3px; border: 0; color: #817789; background: transparent; cursor: pointer; font-size: 18px; line-height: 1; }
 .editor-page__export { position: absolute; z-index: 30; top: 18px; left: 50%; padding: 9px 14px; border: 1px solid rgba(151,240,196,.48); border-radius: 99px; color: #173d2b; background: rgba(184,250,216,.92); box-shadow: 0 12px 34px rgba(44,120,80,.18); backdrop-filter: blur(16px); font-size: 11px; font-weight: 700; transform: translateX(-50%); animation: toast-enter 180ms ease-out both; }
 .editor-page__switching { position: absolute; z-index: 25; top: 76px; right: 18px; display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid rgba(255,255,255,.1); border-radius: 99px; color: #e7e3ed; background: rgba(29,27,35,.88); box-shadow: 0 12px 30px rgba(27,24,35,.18); backdrop-filter: blur(16px); font-size: 10px; }
 .editor-page__switching span { width: 8px; height: 8px; border: 2px solid #d5d0ec; border-top-color: #665bea; border-radius: 50%; animation: loading-spin .7s linear infinite; }

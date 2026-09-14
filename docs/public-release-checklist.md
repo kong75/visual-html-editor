@@ -4,7 +4,7 @@ The owner has chosen private repository development first. The items below are
 intentionally unresolved until a public launch is authorized. They do not prevent
 collaboration in the private repository.
 
-- [ ] Confirm ownership of the `@visual-html` npm scope and availability of all three package names.
+- [ ] Confirm ownership of the `@visual-html` npm scope and availability of all four package names.
 - [ ] Publish maintainer identities, a monitored conduct contact, and an alternate escalation contact.
 - [ ] Enable and verify GitHub private vulnerability reporting, or publish a monitored private security contact; update `SECURITY.md` with actual instructions.
 - [ ] Review repository history and third-party notices before changing visibility.

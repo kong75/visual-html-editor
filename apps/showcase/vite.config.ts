@@ -7,6 +7,10 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
+  base: process.env.VITE_BASE_PATH ?? '/',
+  optimizeDeps: {
+    entries: [path.resolve(root, 'index.html')]
+  },
   resolve: {
     alias: [
       {

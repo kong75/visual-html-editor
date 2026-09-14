@@ -17,6 +17,23 @@ describe('runtime preview hardening', () => {
     expect(hardened).not.toMatch(/http-equiv="refresh"/i);
   });
 
+  it('adds an explicit preview base without retaining a source base element', () => {
+    const hardened = hardenRuntimeHtml(
+      '<!doctype html><html><head><base href="https://untrusted.example/"></head><body><img src="images/cover.png"></body></html>',
+      { baseUrl: 'https://cdn.example.test/course/' }
+    );
+
+    expect(hardened).toContain('<base href="https://cdn.example.test/course/">');
+    expect(hardened).not.toContain('https://untrusted.example/');
+    expect(hardened).toContain('base-uri https://cdn.example.test');
+    expect(hardened).toContain('<img src="images/cover.png">');
+  });
+
+  it('rejects preview base URLs that could execute or access local files', () => {
+    expect(() => hardenRuntimeHtml('<p>Preview</p>', { baseUrl: 'javascript:alert(1)' })).toThrow(/http: or https:/);
+    expect(() => hardenRuntimeHtml('<p>Preview</p>', { baseUrl: 'file:///tmp/' })).toThrow(/http: or https:/);
+  });
+
   it('removes event handlers, srcdoc, executable URLs, and executable inline CSS', () => {
     const hardened = hardenRuntimeHtml(`<main onclick="alert(1)" style="background:url(javascript:alert(1))">
       <a id="bad" href=" java\nscript:alert(1)">Bad</a>

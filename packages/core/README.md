@@ -25,7 +25,7 @@ await controller.dispatch({
 const result = await controller.export();
 ```
 
-The package provides profiles, parsed source nodes, policy validation, typed commands and events, source-preserving rich-text wording and inline marks, explicit external-source replacement policies, minimal source patches, history, runtime projection, and clean export. It has no React dependency.
+The package provides profiles, parsed source nodes, policy validation, typed commands and events, source-preserving rich-text wording, inline marks, and selected-range typography, explicit external-source replacement policies, minimal source patches, history, runtime projection, and clean export. It has no React dependency.
 
 The repository includes detailed custom-profile and headless-integration guides.
 

@@ -9,7 +9,6 @@ interface InspectorBodyProps {
   revision: number;
   propertyDrafts: Record<string, string>;
   computedStyleValues: Record<string, string>;
-  renderedStyleDifferences: Array<{ property: string; source: string; rendered: string }>;
   expandedBoxControl: string | null;
   setExpandedBoxControl: React.Dispatch<React.SetStateAction<string | null>>;
   updateStyleDraft: (property: string, value: string) => void;
@@ -18,7 +17,7 @@ interface InspectorBodyProps {
   onReplaceImage: () => void;
 }
 
-export function InspectorBody({ selectedNode, profile, revision, propertyDrafts, computedStyleValues, renderedStyleDifferences, expandedBoxControl, setExpandedBoxControl, updateStyleDraft, applyStyle, applyAttribute, onReplaceImage }: InspectorBodyProps) {
+export function InspectorBody({ selectedNode, profile, revision, propertyDrafts, computedStyleValues, expandedBoxControl, setExpandedBoxControl, updateStyleDraft, applyStyle, applyAttribute, onReplaceImage }: InspectorBodyProps) {
   const allowedCssProperties = profile.html.allowedCssProperties;
   const allowsStyle = (property: string) => allowedCssProperties.includes(property);
   const showFlexLayout = ['flex', 'inline-flex'].includes(propertyDrafts.display?.trim());
@@ -26,16 +25,7 @@ export function InspectorBody({ selectedNode, profile, revision, propertyDrafts,
   const boxProperties = ['background-color', 'opacity', 'padding', 'margin', 'border', 'border-radius'];
 
   return (
-    <div className="vhe-inspector__body">
-      {renderedStyleDifferences.length > 0 && (
-        <section className="vhe-style-feedback" role="status" aria-label="Rendered style values">
-          <strong>Rendered values</strong>
-          <p>CSS rules and layout can change how your values appear.</p>
-          {renderedStyleDifferences.map(({ property, source, rendered }) => (
-            <p key={property}><strong>{property}</strong>: {rendered} on canvas (source: {source}).</p>
-          ))}
-        </section>
-      )}
+    <div className="vhe-inspector-fields">
       {profile.capabilities.editStyles && typographyProperties.some(allowsStyle) && (
         <section className="vhe-inspector-section">
           <h3>Typography</h3>

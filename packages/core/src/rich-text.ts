@@ -1,12 +1,14 @@
 import { parseFragment } from 'parse5';
 import { DecodingMode, EntityDecoder, htmlDecodeTree } from 'entities/decode';
-import type { InlineMark, TextRange } from './types.js';
+import { setInlineStyleProperty } from './inline-style.js';
+import type { InlineMark, InlineTextStyleProperty, TextRange } from './types.js';
 
 interface SourceLocation {
   startOffset: number;
   endOffset: number;
   startTag?: SourceLocation;
   endTag?: SourceLocation;
+  attrs?: Record<string, SourceLocation>;
 }
 
 interface HtmlNode {
@@ -30,17 +32,24 @@ interface Piece {
   active: boolean;
 }
 
-interface TransformState {
+interface TextTransformState {
   source: string;
   range: TextRange;
-  mark: InlineMark;
   cursor: number;
+}
+
+interface TransformState extends TextTransformState {
+  mark: InlineMark;
 }
 
 export interface InlineMarkTransform {
   html: string;
   active: boolean;
   action: 'add' | 'remove';
+}
+
+export interface InlineStyleTransform {
+  html: string;
 }
 
 export class RichTextRangeError extends Error {
@@ -124,7 +133,7 @@ function textBoundaryMap(raw: string, decodedLength: number): Array<number | und
   return boundaries;
 }
 
-function splitText(node: HtmlNode, active: boolean, state: TransformState): Piece[] {
+function splitText(node: HtmlNode, active: boolean, state: TextTransformState): Piece[] {
   const location = locationOf(node);
   const value = node.value ?? '';
   const nodeStart = state.cursor;
@@ -158,6 +167,10 @@ function rawNode(node: HtmlNode, source: string): string {
 
 function escapeText(value: string): string {
   return value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+}
+
+function escapeAttribute(value: string): string {
+  return escapeText(value).replaceAll('"', '&quot;');
 }
 
 function attributesMatch(left: HtmlNode, right: HtmlNode): boolean {
@@ -344,4 +357,104 @@ export function toggleInlineMarkInHtml(source: string, range: TextRange, mark: I
     ? mergePieces(nodes.flatMap((node) => transformRemove(node, false, state))).map((piece) => piece.html).join('')
     : nodes.map((node) => transformAdd(node, false, state)).join('');
   return { html, active, action: active ? 'remove' : 'add' };
+}
+
+function validateTextRange(nodes: readonly HtmlNode[], range: TextRange): void {
+  const total = nodes.reduce((length, node) => length + textLength(node), 0);
+  if (range.start < 0 || range.end <= range.start || range.end > total) {
+    throw new RichTextRangeError('The selected text range is outside the editable element.');
+  }
+}
+
+function styleText(styles: Readonly<Partial<Record<InlineTextStyleProperty, string>>>): string {
+  let value = '';
+  for (const [property, next] of Object.entries(styles)) {
+    if (next !== undefined) value = setInlineStyleProperty(value, property, next);
+  }
+  return value;
+}
+
+function nodeStyle(node: HtmlNode): string {
+  return node.attrs?.find((attribute) => attribute.name.toLowerCase() === 'style')?.value ?? '';
+}
+
+function replaceNodeStartTagStyle(
+  node: HtmlNode,
+  source: string,
+  styles: Readonly<Partial<Record<InlineTextStyleProperty, string>>>
+): string | undefined {
+  const location = locationOf(node);
+  if (!location?.startTag) return undefined;
+  let nextStyle = nodeStyle(node);
+  for (const [property, next] of Object.entries(styles)) {
+    if (next !== undefined) nextStyle = setInlineStyleProperty(nextStyle, property, next);
+  }
+
+  const startTag = source.slice(location.startTag.startOffset, location.startTag.endOffset);
+  const styleLocation = location.attrs?.style;
+  if (styleLocation) {
+    const start = styleLocation.startOffset - location.startTag.startOffset;
+    const end = styleLocation.endOffset - location.startTag.startOffset;
+    return `${startTag.slice(0, start)}style="${escapeAttribute(nextStyle)}"${startTag.slice(end)}`;
+  }
+  const insertion = startTag.endsWith('/>') ? startTag.length - 2 : startTag.length - 1;
+  return `${startTag.slice(0, insertion)} style="${escapeAttribute(nextStyle)}"${startTag.slice(insertion)}`;
+}
+
+interface StyleTransformState extends TextTransformState {
+  styleAttribute: string;
+  styles: Readonly<Partial<Record<InlineTextStyleProperty, string>>>;
+}
+
+function transformInlineStyles(node: HtmlNode, state: StyleTransformState): string {
+  if (node.nodeName === '#text') {
+    return splitText(node, false, state)
+      .map((piece) => piece.selected ? `<span style="${escapeAttribute(state.styleAttribute)}">${piece.html}</span>` : piece.html)
+      .join('');
+  }
+
+  const length = textLength(node);
+  const start = state.cursor;
+  const end = start + length;
+  const location = locationOf(node);
+  if (!location || !selectionOverlaps(start, end, state.range)) {
+    state.cursor = end;
+    return rawNode(node, state.source);
+  }
+  if (!node.tagName || !location.startTag || !location.endTag) {
+    state.cursor = end;
+    return rawNode(node, state.source);
+  }
+
+  // A span created by an earlier range edit becomes the stable formatting
+  // boundary. Updating it in place keeps repeated color/size adjustments flat.
+  if (node.tagName.toLowerCase() === 'span' && state.range.start <= start && end <= state.range.end && length > 0) {
+    const startTag = replaceNodeStartTagStyle(node, state.source, state.styles);
+    if (startTag !== undefined) {
+      state.cursor = end;
+      const inner = state.source.slice(location.startTag.endOffset, location.endTag.startOffset);
+      const endTag = state.source.slice(location.endTag.startOffset, location.endTag.endOffset);
+      return `${startTag}${inner}${endTag}`;
+    }
+  }
+
+  const startTag = state.source.slice(location.startTag.startOffset, location.startTag.endOffset);
+  const endTag = state.source.slice(location.endTag.startOffset, location.endTag.endOffset);
+  const inner = appendChildren(node, (child) => transformInlineStyles(child, state), state.source);
+  return `${startTag}${inner}${endTag}`;
+}
+
+/** Apply CSS typography to a rendered-text range without normalizing unrelated HTML. */
+export function setInlineStylesInHtml(
+  source: string,
+  range: TextRange,
+  styles: Readonly<Partial<Record<InlineTextStyleProperty, string>>>
+): InlineStyleTransform {
+  const fragment = parseFragment(source, { sourceCodeLocationInfo: true }) as unknown as { childNodes: HtmlNode[] };
+  const nodes = fragment.childNodes ?? [];
+  validateTextRange(nodes, range);
+  const styleAttribute = styleText(styles);
+  if (!styleAttribute) throw new RichTextRangeError('At least one inline text style is required.');
+  const state: StyleTransformState = { source, range, styles, styleAttribute, cursor: 0 };
+  return { html: nodes.map((node) => transformInlineStyles(node, state)).join('') };
 }

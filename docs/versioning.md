@@ -13,6 +13,6 @@ Every release candidate must pass packed consumer installation, declaration reso
 
 ## Coordinated package versions
 
-Core, deck, and React share one release version. Use `pnpm release:version <exact-semver>` to update all three and the private root. Prereleases use the `next` dist-tag. See the [release procedure](../RELEASING.md) for exact preparation, publishing, and recovery steps.
+Core, deck, editor CLI, and React share one release version. Use `pnpm release:version <exact-semver>` to update all four and the private root. Prereleases use the `next` dist-tag. See the [release procedure](../RELEASING.md) for exact preparation, publishing, and recovery steps.
 
 Public API review snapshots the full reachable declaration graph, including subpath entries and types behind re-exports. Run `pnpm api:update` only for intentional changes and include the resulting diff in review. Current support ranges and tested reference versions are documented in [compatibility](./compatibility.md).
