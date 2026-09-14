@@ -6,9 +6,19 @@ Visual HTML brings visual editing to the HTML your product already has. Let user
 
 [Try your HTML](#try-your-own-html) · [Integrate with React](#embed-in-your-product) · [Documentation](#documentation) · [Contribute](#contributing)
 
-![Visual HTML editing an HTML presentation, with slide navigation, a selected heading, and style controls.](./docs/images/visual-html-editor.png)
+## See it in action
 
-*The working React editor, shown with the Slides preset. Email and Web use the same editor with different editing rules and viewports.*
+**Email templates** — Rewrite and restyle content directly, then see the clean HTML behind it.
+
+![Animated Visual HTML email editing demo showing direct text editing, typography and spacing controls, and the resulting HTML.](./docs/images/readme-demos/email.webp)
+
+**Learning slides** — Edit text, move elements, and resize a card on the canvas.
+
+![Animated Visual HTML slide editing demo showing text changes, direct positioning, card resizing, and the resulting HTML.](./docs/images/readme-demos/slides.webp)
+
+**Web content** — Refine a call to action and preview the page reflowing for mobile.
+
+![Animated Visual HTML web editing demo showing button text and style changes, a responsive mobile preview, and the resulting HTML.](./docs/images/readme-demos/web.webp)
 
 > **Pre-release alpha.** The core editing workflow is available for evaluation and early integration. APIs and compatibility are still evolving toward `1.0`. Until the first npm release is published, use the local workspace. See the [roadmap](./ROADMAP.md) and [API stability policy](./docs/versioning.md).
 
