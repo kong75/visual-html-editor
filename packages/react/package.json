@@ -49,7 +49,7 @@
     "attw": "attw --pack . --profile esm-only --exclude-entrypoints ./styles.css"
   },
   "dependencies": {
-    "@base-ui/react": "^1.7.0",
+    "@base-ui/react": "^1.8.0",
     "@visual-html/core": "workspace:*",
     "@visual-html/deck": "workspace:*",
     "lucide-react": "^1.31.0"
