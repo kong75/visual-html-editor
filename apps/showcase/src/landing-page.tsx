@@ -61,10 +61,9 @@ export function LandingPage() {
             heroRef.current?.style.setProperty('--art-y', '0px');
           }}>
             <div className="hero-art" aria-hidden="true"><img src={ribbonArtwork} width="1536" height="1024" alt="" fetchPriority="high" /></div>
-            <div className="hero-art-label" aria-hidden="true"><span className="crosshair">+</span><span>FORM WITHOUT LIMITS<br /><small>V / 001 — THE POSSIBILITIES ARE OPEN.</small></span></div>
             <div className="landing-hero__copy">
               <p className="eyebrow hero-eyebrow"><span className="live-dot" /> THE SOURCE IS YOURS. SO IS THE POSSIBILITY.</p>
-              <h1>Make HTML<br /><em>feel alive.</em><span className="hero-period" aria-hidden="true">✳</span></h1>
+              <h1>Make HTML<br /><em>feel alive.</em></h1>
               <p className="landing-hero__lede">Step out of the code. Into your creative element.<br />A visual playground for emails, slides, and the web.</p>
               <div className="landing-hero__actions"><a className="button-light" href="#/editor?import=1&amp;profile=web">Try your HTML <Arrow diagonal /></a><a className="hero-explore" href="#playground"><span className="play-icon" aria-hidden="true">▷</span> Explore examples</a></div>
               <div className="hero-fineprint"><span>No sign-up. Just start.</span><span className="fineprint-line" /><span>Free & open source</span></div>
@@ -98,7 +97,6 @@ export function LandingPage() {
     </div>
   );
 }
-
 
 
 
