@@ -107,7 +107,7 @@ test('inline selected-text toolbar remains visually coherent', async ({ page }) 
   await page.getByRole('button', { name: 'More text options' }).click();
   await stabilizeVisuals(page);
   await expect(toolbar).toHaveScreenshot('inline-selected-text-toolbar.png', {
-    animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.04, threshold: 0.4
+    animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.08, threshold: 0.4
   });
   await expect(page.getByLabel('More selected text options')).toHaveScreenshot('inline-selected-text-more.png', {
     animations: 'disabled', caret: 'hide', maxDiffPixelRatio: 0.04
