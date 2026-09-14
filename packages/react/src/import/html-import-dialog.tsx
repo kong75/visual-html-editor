@@ -64,6 +64,7 @@ export function HtmlImportDialog({ pendingHtmlImport, isImporting, restoreFocusR
           )}
         </div>
         <div className="vhe-import-dialog__actions">
+          {/* biome-ignore lint/a11y/noAutofocus: Initial focus on the non-destructive action is deliberate dialog behavior. */}
           <button type="button" className="vhe-button" autoFocus disabled={isImporting} onClick={() => onDismiss()}>Cancel</button>
           <button type="button" className="vhe-button vhe-button--primary" disabled={isImporting} onClick={() => void onConfirm()}>{isImporting ? 'Importing…' : 'Import HTML'}</button>
         </div>

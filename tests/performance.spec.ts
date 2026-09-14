@@ -1,5 +1,8 @@
 import { expect, test } from '@playwright/test';
 
+const LARGE_DOCUMENT_LOAD_BUDGET_MS = 4_000;
+const SELECTION_RESPONSE_BUDGET_MS = 750;
+
 test('keeps a large generated document responsive within a browser budget', async ({ page }) => {
   test.setTimeout(60_000);
   await page.goto('/#/editor');
@@ -12,14 +15,16 @@ test('keeps a large generated document responsive within a browser budget', asyn
 
   await page.getByRole('button', { name: 'Source' }).click();
   await page.getByLabel('HTML source').fill(html);
-  const loadStarted = Date.now();
+  const loadStarted = await page.evaluate(() => performance.now());
   await page.getByRole('button', { name: 'Apply' }).click();
   const articles = page.frameLocator('iframe[title="Visual HTML canvas"]').locator('article');
-  await expect(articles).toHaveCount(200, { timeout: 15_000 });
-  expect(Date.now() - loadStarted).toBeLessThan(12_000);
+  await expect(articles).toHaveCount(200, { timeout: 5_000 });
+  const loadDuration = await page.evaluate((started) => performance.now() - started, loadStarted);
+  expect(loadDuration, 'large-document load duration').toBeLessThan(LARGE_DOCUMENT_LOAD_BUDGET_MS);
 
-  const selectionStarted = Date.now();
+  const selectionStarted = await page.evaluate(() => performance.now());
   await page.frameLocator('iframe[title="Visual HTML canvas"]').locator('#card-199 h2').click();
-  await expect(page.locator('.vhe-inspector__title code')).toHaveText('h2');
-  expect(Date.now() - selectionStarted).toBeLessThan(3_000);
+  await expect(page.locator('.vhe-inspector__title code')).toHaveText('h2', { timeout: 1_000 });
+  const selectionDuration = await page.evaluate((started) => performance.now() - started, selectionStarted);
+  expect(selectionDuration, 'selection response duration').toBeLessThan(SELECTION_RESPONSE_BUDGET_MS);
 });

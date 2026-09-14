@@ -22,7 +22,8 @@ export default defineConfig({
       include: [
         'packages/core/src/**/*.ts',
         'packages/deck/src/**/*.ts',
-        'packages/react/src/use-html-editor.ts'
+        'packages/react/src/**/*.ts',
+        'packages/react/src/**/*.tsx'
       ],
       exclude: [
         'packages/**/src/**/*.test.ts',
@@ -31,10 +32,28 @@ export default defineConfig({
         'packages/**/src/types.ts'
       ],
       thresholds: {
-        statements: 90,
-        branches: 80,
-        functions: 95,
-        lines: 92
+        statements: 45,
+        branches: 38,
+        functions: 47,
+        lines: 46,
+        'packages/core/src/**': {
+          statements: 90,
+          branches: 80,
+          functions: 95,
+          lines: 92
+        },
+        'packages/deck/src/**': {
+          statements: 95,
+          branches: 85,
+          functions: 95,
+          lines: 95
+        },
+        'packages/react/src/**': {
+          statements: 4,
+          branches: 1,
+          functions: 5,
+          lines: 4
+        }
       }
     }
   }

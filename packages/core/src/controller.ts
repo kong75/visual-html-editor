@@ -67,6 +67,7 @@ export class EditorController {
   private historyCursor = -1;
   private checkpoint: WorkspaceSnapshot;
   private keyCounter = 0;
+  private snapshot: EditorSnapshot | null = null;
   private listeners = new Set<() => void>();
   private eventListeners = new Map<EditorEventType, Set<(event: unknown) => void>>();
 
@@ -109,6 +110,7 @@ export class EditorController {
   }
 
   private emit(): void {
+    this.snapshot = null;
     for (const listener of this.listeners) listener();
   }
 
@@ -248,10 +250,11 @@ export class EditorController {
   }
 
   getSnapshot(): EditorSnapshot {
+    if (this.snapshot) return this.snapshot;
     const file = this.workspace.files.get(this.workspace.entryFileId);
     if (!file) throw new Error('Entry HTML file is missing.');
     const issues = validateWorkspace(this.workspace, this.index, this.profile);
-    return {
+    this.snapshot = {
       revision: this.workspace.revision,
       html: file.content,
       profile: this.profile,
@@ -262,6 +265,7 @@ export class EditorController {
       canRedo: this.historyCursor < this.history.length - 1,
       dirty: this.isDirty()
     };
+    return this.snapshot;
   }
 
   getNode(key: string): ParsedNode | undefined {

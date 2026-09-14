@@ -46,11 +46,12 @@ export function cssValueAllowed(value: string, profile: EditorProfile): boolean 
   ) return false;
 
   const urlPattern = /url\s*\(\s*(['"]?)(.*?)\1\s*\)/gi;
-  let match: RegExpExecArray | null;
   let urls = 0;
-  while ((match = urlPattern.exec(decoded)) !== null) {
+  let match = urlPattern.exec(decoded);
+  while (match !== null) {
     urls += 1;
     if (!urlValueAllowed(match[2], profile)) return false;
+    match = urlPattern.exec(decoded);
   }
   return !/url\s*\(/i.test(decoded) || urls > 0;
 }

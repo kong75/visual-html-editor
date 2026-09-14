@@ -17,6 +17,7 @@ test('landing identity and hero artwork remain visually coherent', async ({ page
   });
 });
 
+// biome-ignore lint/correctness/noEmptyPattern: Playwright requires fixture parameters to use object destructuring.
 test.beforeEach(async ({}, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium', 'Visual baselines are maintained in the CI Chromium project; interaction behavior remains cross-browser.');
 });

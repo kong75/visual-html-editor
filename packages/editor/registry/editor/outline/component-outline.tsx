@@ -96,6 +96,7 @@ export function ComponentOutlineNode({ node, nodes, selectedKey, collapsedKeys, 
       className={`vhe-outline-node${selectedKey === node.key ? ' vhe-outline-node--selected' : ''}`}
       data-outline-node-key={node.key}
       role="treeitem"
+      tabIndex={-1}
       aria-label={accessibleName}
       aria-selected={selectedKey === node.key}
       aria-expanded={children.length ? !collapsed : undefined}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.5.13/schema.json",
+  "files": {
+    "ignoreUnknown": true,
+    "includes": [
+      "packages/**",
+      "apps/**",
+      "tests/**",
+      "scripts/**",
+      "*.{ts,mts,mjs}",
+      "!!**/dist",
+      "!!**/node_modules",
+      "!!**/test-results*",
+      "!!packages/editor/registry"
+    ]
+  },
+  "formatter": {
+    "enabled": false
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "preset": "recommended",
+      "a11y": {
+        "useSemanticElements": "off"
+      },
+      "correctness": {
+        "noInvalidGridAreas": "off",
+        "useExhaustiveDependencies": "off"
+      },
+      "suspicious": {
+        "noControlCharactersInRegex": "off"
+      }
+    }
+  }
+}

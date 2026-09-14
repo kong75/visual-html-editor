@@ -1,4 +1,7 @@
-import { parse as parseCss, type ChildNode } from 'postcss';
+/// <reference path="./css-tree.d.ts" />
+
+import parseCss from 'css-tree/parser';
+import type { AtrulePlain, CssNode, CssNodePlain, DeclarationPlain } from 'css-tree';
 import { parseInlineStyle } from './inline-style.js';
 import { attributeNameAllowed, cssValueAllowed, decodeCssEscapes, urlValueAllowed } from './security.js';
 import type {
@@ -9,6 +12,65 @@ import type {
 } from './types.js';
 
 type IssueLocation = Omit<ValidationIssue, 'code' | 'severity' | 'message'>;
+
+function assertBalancedStylesheet(css: string): void {
+  const closingToken = new Map([['{', '}'], ['[', ']'], ['(', ')']]);
+  const stack: string[] = [];
+  let quote: '"' | "'" | null = null;
+  let escaped = false;
+  let comment = false;
+
+  for (let index = 0; index < css.length; index += 1) {
+    const character = css[index];
+    const next = css[index + 1];
+    if (comment) {
+      if (character === '*' && next === '/') {
+        comment = false;
+        index += 1;
+      }
+      continue;
+    }
+    if (quote) {
+      if (escaped) escaped = false;
+      else if (character === '\\') escaped = true;
+      else if (character === quote) quote = null;
+      continue;
+    }
+    if (character === '/' && next === '*') {
+      comment = true;
+      index += 1;
+      continue;
+    }
+    if (character === '"' || character === "'") {
+      quote = character;
+      continue;
+    }
+    if (character === '\\') {
+      index += 1;
+      continue;
+    }
+    if (closingToken.has(character)) stack.push(character);
+    else if (character === '}' || character === ']' || character === ')') {
+      const opening = stack.pop();
+      if (!opening || closingToken.get(opening) !== character) throw new Error('Unbalanced CSS token.');
+    }
+  }
+
+  if (quote || comment || escaped || stack.length > 0) throw new Error('Unclosed CSS token.');
+}
+
+function walkCss(node: CssNodePlain, visit: (node: CssNodePlain) => void): void {
+  visit(node);
+  for (const value of Object.values(node)) {
+    if (Array.isArray(value)) {
+      for (const child of value) {
+        if (child && typeof child === 'object' && 'type' in child) walkCss(child as CssNodePlain, visit);
+      }
+    } else if (value && typeof value === 'object' && 'type' in value) {
+      walkCss(value as CssNodePlain, visit);
+    }
+  }
+}
 
 function validateDeclaration(
   property: string,
@@ -60,31 +122,38 @@ function validateStyle(
 
 function validateStylesheet(css: string, offset: number, profile: EditorProfile, issueBase: IssueLocation): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
-  const location = (node: ChildNode): IssueLocation => ({
+  const location = (node: CssNode): IssueLocation => ({
     ...issueBase,
-    range: node.source?.start && node.source.end
-      ? { start: offset + node.source.start.offset, end: offset + node.source.end.offset }
+    range: node.loc
+      ? { start: offset + node.loc.start.offset, end: offset + node.loc.end.offset }
       : issueBase.range
   });
   try {
-    const root = parseCss(css, { from: undefined });
-    root.walkDecls((declaration) => {
-      issues.push(...validateDeclaration(declaration.prop, declaration.value, profile, location(declaration)));
-    });
-    root.walkAtRules((rule) => {
-      // PostCSS can split an escaped identifier between name and params.
-      // Reassemble its header before recognizing the import URL grammar.
-      const header = decodeCssEscapes(rule.name + (rule.raws.afterName ?? '') + rule.params)
-        .replace(/\/\*[\s\S]*?\*\//g, '');
-      const importParams = header.match(/^import(?=[\s"'(]|$)([\s\S]*)$/i)?.[1];
-      const name = importParams !== undefined ? 'import' : decodeCssEscapes(rule.name).toLowerCase();
-      // @import permits a quoted URL without url(), unlike declarations.
-      const importedUrl = importParams?.match(/^\s*(['"])([\s\S]*?)\1/)?.[2];
-      if (!cssValueAllowed(rule.params, profile) || (importedUrl !== undefined && !urlValueAllowed(importedUrl, profile))) {
-        issues.push({
-          ...location(rule), code: 'css-value-not-allowed', severity: 'blocking',
-          message: `CSS @${name} contains a disallowed URL or executable construct.`
-        });
+    assertBalancedStylesheet(css);
+    const root = parseCss(css, { positions: true, list: false });
+    walkCss(root, (node) => {
+      if (node.type === 'Declaration') {
+        const declaration = node as DeclarationPlain;
+        const value = declaration.value.loc
+          ? css.slice(declaration.value.loc.start.offset, declaration.value.loc.end.offset)
+          : '';
+        issues.push(...validateDeclaration(declaration.property, value, profile, location(declaration as CssNode)));
+      } else if (node.type === 'Atrule') {
+        const rule = node as AtrulePlain;
+        const params = rule.prelude?.loc
+          ? css.slice(rule.prelude.loc.start.offset, rule.prelude.loc.end.offset)
+          : '';
+        const header = decodeCssEscapes(`${rule.name} ${params}`).replace(/\/\*[\s\S]*?\*\//g, '');
+        const importParams = header.match(/^import(?=[\s"'(]|$)([\s\S]*)$/i)?.[1];
+        const name = importParams !== undefined ? 'import' : decodeCssEscapes(rule.name).toLowerCase();
+        // @import permits a quoted URL without url(), unlike declarations.
+        const importedUrl = importParams?.match(/^\s*(['"])([\s\S]*?)\1/)?.[2];
+        if (!cssValueAllowed(params, profile) || (importedUrl !== undefined && !urlValueAllowed(importedUrl, profile))) {
+          issues.push({
+            ...location(rule as CssNode), code: 'css-value-not-allowed', severity: 'blocking',
+            message: `CSS @${name} contains a disallowed URL or executable construct.`
+          });
+        }
       }
     });
   } catch {

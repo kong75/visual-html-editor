@@ -24,6 +24,17 @@ function nodeByTag(controller: EditorController, tagName: string) {
 }
 
 describe('EditorController', () => {
+  it('keeps snapshot identity stable until observable state changes', async () => {
+    const controller = await create();
+    const initial = controller.getSnapshot();
+    expect(controller.getSnapshot()).toBe(initial);
+
+    controller.setProfile(emailProfile);
+    const updated = controller.getSnapshot();
+    expect(updated).not.toBe(initial);
+    expect(controller.getSnapshot()).toBe(updated);
+  });
+
   it('recognizes saved content after undo and permits a clean external update', async () => {
     const controller = await EditorController.create({ html: '<p>A</p>', profile: webProfile });
     const dirtyEvents: boolean[] = [];
@@ -369,7 +380,7 @@ describe('EditorController', () => {
       source: '<!doctype html><html><body><script>alert(1)</script><h1>Blocked</h1></body></html>'
     });
     controller.createCheckpoint();
-    unsubscribers.forEach((unsubscribe) => unsubscribe());
+    unsubscribers.forEach((unsubscribe) => { unsubscribe(); });
 
     expect(events).toEqual(['command:Edit <h1> text', 'command:Edit HTML source']);
     expect(revisions).toEqual([1, 2]);

@@ -228,7 +228,7 @@ export function SelectionFormatting({
         ><SlidersHorizontal size={15} strokeWidth={1.9} aria-hidden={true} /></button>
       </div>
       {moreOpen && (
-        <div className="vhe-inline-format__more" aria-label="More selected text options">
+        <div className="vhe-inline-format__more" role="group" aria-label="More selected text options">
           <StyleField disabled={!canApply('font-weight')} label="Weight" property="font-weight" value={selection.activeStyles['font-weight']} placeholder="400" onApply={apply} />
           <StyleField disabled={!canApply('line-height')} label="Line height" property="line-height" value={selection.activeStyles['line-height']} placeholder="1.4" onApply={apply} />
           <StyleField disabled={!canApply('letter-spacing')} label="Tracking" property="letter-spacing" value={selection.activeStyles['letter-spacing']} placeholder="0px" onApply={apply} />

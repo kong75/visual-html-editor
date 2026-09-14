@@ -55,7 +55,7 @@ export function useCanvasRuntime({ controller, snapshot, outlineNodes, elementBe
       cancelAnimationFrame(refreshFrame);
       observer?.disconnect();
       pointer.dispose();
-      listeners.forEach((remove) => remove());
+      listeners.forEach((remove) => { remove(); });
     };
   }, [baseUrl, controller, mode, outlineNodes, elementBehaviorResolversRef, selection, textEditing, setNotice, refreshPropertyDrafts, snapshot.profile, snapshot.projection.html, snapshot.projection.runtimeAttribute, snapshot.revision]);
 }

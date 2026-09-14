@@ -88,6 +88,7 @@ export function DeckNavigator({ controller, className = '', onSlideChange, onHis
         {snapshot.deck.slides.map((slide, index) => {
           const active = slide.id === snapshot.activeSlideId;
           return (
+            // biome-ignore lint/a11y/noStaticElementInteractions: The wrapper owns pointer drag-and-drop; its child button owns keyboard selection.
             <div
               key={slide.id}
               className={`vhe-deck-item${active ? ' vhe-deck-item--active' : ''}${draggingId === slide.id ? ' vhe-deck-item--dragging' : ''}`}

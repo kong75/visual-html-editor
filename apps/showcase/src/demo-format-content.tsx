@@ -64,5 +64,9 @@ export function FormatSource({ format, frame }: { format: 'slides' | 'web'; fram
     '<a href="#/editor" style="', `  background: ${frame.color};`, `  border-radius: ${frame.size}px;">`, `  ${frame.text}`, '</a>', '',
     '.hero {', '  display: grid;', '  grid-template-columns: 1.3fr 1fr;', '}', '@media (max-width: 600px) {', '  .hero { grid-template-columns: 1fr; }', '}'
   ];
-  return <>{lines.map((line, i) => <div key={i} className={format === 'slides' ? [2, 3, 5, 9, 10].includes(i) ? 'is-changed' : '' : [1, 2, 3, 11].includes(i) ? 'is-changed' : ''}>{line || ' '}</div>)}</>;
+  return <>{lines.map((line, i) => <div
+    // biome-ignore lint/suspicious/noArrayIndexKey: These static source rows never reorder or retain component state.
+    key={i}
+    className={format === 'slides' ? [2, 3, 5, 9, 10].includes(i) ? 'is-changed' : '' : [1, 2, 3, 11].includes(i) ? 'is-changed' : ''}
+  >{line || ' '}</div>)}</>;
 }

@@ -138,7 +138,7 @@
   .landing-hero { min-height: 670px; padding-top: 80px; }.hero-art { top: 76px; left: 37%; width: 96%; }.landing-hero h1 { font-size: 9.2vw; }.hero-period { right: -45px; font-size: 39px; }.hero-art-label { right: 0; bottom: 110px; }
   .format-strip { padding-inline: 32px; gap: 20px; }.format-strip > div { gap: 10px; font-size: 12px; }.format-strip > span { font-size: 7px; }
   .landing-demo.section-wrap { padding: 80px 32px 42px; }.demo-controls__hint { display: none; }
-  
+
   .principles-grid { gap: 13px; }.principle-art { height: 210px; }.principle-card__copy { padding: 23px 20px 27px; }.principle-card h3 { font-size: 15px; }.principle-card p { font-size: 10px; }.direct-art__text { font-size: 22px; }.direct-art__text em { font-size: 33px; }.source-art { padding-inline: 16px; }.source-art code { font-size: 8px; }.control-art { padding-inline: 17px; }
   .developer-section { gap: 45px; }.developer-section h2 { font-size: 40px; }.install-command { padding-inline: 16px; gap: 8px; }.install-command code { font-size: 10px; }
 }
@@ -150,7 +150,7 @@
   .landing-demo.section-wrap { padding: 64px 20px 30px; }.section-heading { display: block; margin-bottom: 31px; }.eyebrow { font-size: 7px; letter-spacing: .9px; margin-bottom: 19px; }.section-heading h2, .developer-section h2 { font-size: clamp(33px,7vw,48px); letter-spacing: -1.7px; }.section-heading h2 em, .developer-section h2 em { font-size: 1.15em; }.section-heading > p { margin: 20px 0 0; font-size: 11px; }
   .demo-controls { padding-bottom: 14px; }.landing-example-tabs { width: 100%; gap: 3px; }.landing-example-tabs button { flex: 1; justify-content: center; min-height: 40px; gap: 6px; padding-inline: 7px; font-size: 9px; }.landing-example-tabs button > span { font-size: 7px; }
   .demo-brand { gap: 5px; }.demo-brand > span, .demo-brand small { display: none; }.demo-brand svg { width: 21px; height: 21px; }.demo-brand strong { font-size: 10px; }
-  
+
   .landing-demo__caption { gap: 10px; padding-top: 18px; font-size: 8px; }.landing-demo__caption > span { gap: 7px; }.caption-cross { font-size: 18px; }.landing-demo__caption a { gap: 5px; }.landing-demo__caption svg { width: 14px; }
   .landing-principles { padding-block: 64px 55px; }.principles-grid { grid-template-columns: 1fr; gap: 18px; }.principle-art { height: 220px; }.principle-card__copy { padding: 25px; }.principle-card h3 { font-size: 18px; }.principle-card p { font-size: 12px; }.principle-card__copy > span { font-size: 8px; }.direct-art__text { font-size: 32px; }.direct-art__text em { font-size: 43px; }.source-art { padding: 25px; }.source-art code { font-size: 11px; }.source-art__header { font-size: 8px; }.source-art__badge { margin-top: 18px; }.control-art { padding: 25px; }.control-art > div { font-size: 11px; }.control-art small { font-size: 7px; }
   .developer-section { grid-template-columns: 1fr; gap: 32px; padding-block: 55px 65px; }.developer-section > div > p:not(.eyebrow) { font-size: 12px; }.install-card { transform: none; }.install-command code { font-size: 11px; }.install-card__header { padding-inline: 16px; font-size: 7px; }.install-code { font-size: 11px; padding: 21px; }

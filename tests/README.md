@@ -34,7 +34,7 @@ pnpm test:coverage
 pnpm test:mutation
 ```
 
-The coverage command combines core, deck, repository, and controlled React lifecycle tests. It enforces 90% statements, 80% branches, 95% functions, and 92% lines across the measured public-risk modules. Raise thresholds deliberately as coverage improves; do not lower them to merge unrelated work.
+The coverage command includes every production TypeScript and TSX module in Core, Deck, and React, including files that unit tests do not currently execute. Its global thresholds therefore describe the complete measured frontend rather than only the engine-heavy subset. Core and Deck retain higher package-specific thresholds, while React has an explicit baseline that should rise as browser behavior gains focused unit coverage. Browser tests provide separate behavioral confidence and do not contribute execution data to the Vitest percentage. Raise thresholds deliberately as coverage improves; do not lower them to merge unrelated work.
 
 `pnpm test:mutation` mutates the source patcher and runtime/security policy modules. It is intentionally bounded so contributors can run it locally, and it runs weekly plus on demand in GitHub Actions. Mutation failures should be addressed by strengthening assertions or documenting a genuinely equivalent mutant—not by excluding ordinary logic.
 

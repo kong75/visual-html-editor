@@ -53,6 +53,7 @@ export class DeckController {
   private idCounter = 0;
   private history: DeckHistoryEntry[] = [];
   private historyCursor = -1;
+  private snapshot: DeckSnapshot | null = null;
   private listeners = new Set<() => void>();
 
   private constructor(options: CreateDeckControllerOptions) {
@@ -75,6 +76,7 @@ export class DeckController {
   }
 
   private emit(): void {
+    this.snapshot = null;
     for (const listener of this.listeners) listener();
   }
 
@@ -120,8 +122,9 @@ export class DeckController {
   }
 
   getSnapshot(): DeckSnapshot {
+    if (this.snapshot) return this.snapshot;
     const activeSlideIndex = this.deck.slides.findIndex((slide) => slide.id === this.activeSlideId);
-    return {
+    this.snapshot = {
       revision: this.revision,
       deck: this.deck,
       activeSlideId: this.activeSlideId,
@@ -130,6 +133,7 @@ export class DeckController {
       canRedo: this.historyCursor < this.history.length - 1,
       dirty: this.currentContent !== this.checkpointContent
     };
+    return this.snapshot;
   }
 
   setActiveSlide(slideId: SlideId): DeckCommandResult {

@@ -19,6 +19,17 @@ function deck(): HtmlDeck {
 }
 
 describe('DeckController', () => {
+  it('keeps snapshot identity stable until observable state changes', async () => {
+    const controller = await DeckController.create({ deck: deck() });
+    const initial = controller.getSnapshot();
+    expect(controller.getSnapshot()).toBe(initial);
+
+    controller.setActiveSlide('details');
+    const updated = controller.getSnapshot();
+    expect(updated).not.toBe(initial);
+    expect(controller.getSnapshot()).toBe(updated);
+  });
+
   it('recognizes saved deck contents after undo and redo, including unrecorded source edits', async () => {
     const controller = await DeckController.create({ deck: deck() });
     controller.addSlide();

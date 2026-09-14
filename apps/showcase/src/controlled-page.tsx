@@ -55,7 +55,7 @@ export function ControlledPage() {
 
   return (
     <main className="controlled-page">
-      <div className="controlled-page__status" aria-label="Controlled editor status">
+      <div className="controlled-page__status" role="status" aria-label="Controlled editor status">
         <span data-testid="controlled-controller">{controllerId}</span>
         <span data-testid="controlled-changes">{changeCount} changes</span>
         <span data-testid="controlled-dirty">{dirty ? 'dirty' : 'clean'}</span>

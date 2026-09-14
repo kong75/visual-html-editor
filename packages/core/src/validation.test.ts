@@ -36,6 +36,7 @@ describe('complete document policy validation', () => {
     '@import "ftp://example.com/a.css"layer(theme);',
     '@import /* comment */ "ftp://example.com/a.css" screen;',
     '@import url("ftp://example.com/a.css") layer(theme);',
+    String.raw`@\69mport 'ftp://example.com/a.css';`,
     String.raw`@im\70ort '\66tp://example.com/a.css';`,
     String.raw`p { background: u\72l(ftp://example.com/a.png) }`,
     'p { width: expression(alert(1)) }'
@@ -44,7 +45,7 @@ describe('complete document policy validation', () => {
     expect((await controller.export()).issues).toContainEqual(expect.objectContaining({ code: 'css-value-not-allowed', severity: 'blocking' }));
   });
 
-  it.each(['p { color: red', 'p { color: "unclosed }', String.raw`@\69mport 'ftp://example.com/a.css';`])('blocks stylesheets that cannot be validated: %s', async (css) => {
+  it.each(['p { color: red', 'p { color: "unclosed }'])('blocks stylesheets that cannot be validated: %s', async (css) => {
     const controller = await EditorController.create({ html: `<style>${css}</style>`, profile: webProfile });
     expect((await controller.export()).issues).toContainEqual(expect.objectContaining({ code: 'invalid-stylesheet', severity: 'blocking' }));
   });

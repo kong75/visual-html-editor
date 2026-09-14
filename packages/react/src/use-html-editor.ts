@@ -130,7 +130,7 @@ export function useHtmlEditor({
 
     return () => {
       active = false;
-      unsubscribers.forEach((unsubscribe) => unsubscribe());
+      unsubscribers.forEach((unsubscribe) => { unsubscribe(); });
     };
   }, []);
 
