@@ -424,6 +424,9 @@ test('styles a selected text range with typography, emphasis, and block alignmen
   const font = page.getByRole('combobox', { name: 'Font for selected text' });
   await font.selectOption('Arial, Helvetica, sans-serif');
   await expect(text.locator('em span')).toHaveCSS('font-family', 'Arial, Helvetica, sans-serif');
+  // Formatting rebuilds the canvas and restores the rich-text selection over two
+  // animation frames. Wait for that handoff before focusing another toolbar field.
+  await expect(text).toBeFocused();
   const size = page.getByRole('textbox', { name: 'Size for selected text' });
   await size.fill('24px');
   await size.press('Enter');

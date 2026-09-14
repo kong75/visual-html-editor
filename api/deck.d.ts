@@ -21,6 +21,7 @@ export declare class DeckController {
     private idCounter;
     private history;
     private historyCursor;
+    private snapshot;
     private listeners;
     private constructor();
     static create(options: CreateDeckControllerOptions): Promise<DeckController>;

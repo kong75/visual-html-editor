@@ -21,6 +21,7 @@ export declare class EditorController {
     private historyCursor;
     private checkpoint;
     private keyCounter;
+    private snapshot;
     private listeners;
     private eventListeners;
     private constructor();

@@ -2,7 +2,7 @@
 
 ## Current scope
 
-The project is being prepared in a private repository before public alpha. Core, deck, and React have established package boundaries, documentation, and validation workflows. Application maturity and public-release readiness are separate decisions.
+The project is prepared for a public alpha. Core, deck, and React have established package boundaries, documentation, and validation workflows. Application maturity and release readiness remain separate decisions.
 
 ## Repository preparation
 
@@ -16,9 +16,9 @@ The project is being prepared in a private repository before public alpha. Core,
 
 These are repository capabilities, not a claim that every configured job has passed on every commit. The release gate is `pnpm release:check` plus successful CI on the exact release commit. Do not carry test totals or coverage percentages forward from an older run.
 
-## Public launch work intentionally deferred
+## Distribution work
 
-Maintainer/contact identities and npm scope ownership remain owner decisions. Follow the [public release checklist](./docs/public-release-checklist.md) before changing visibility or publishing npm packages. A hosted docs site and showcase are useful distribution work, but are not prerequisites for accepting an alpha contribution.
+Follow the [public release checklist](./docs/public-release-checklist.md) before publishing npm packages. A hosted docs site and showcase are useful distribution work, but are not prerequisites for accepting an alpha contribution.
 
 ## Product maturity
 

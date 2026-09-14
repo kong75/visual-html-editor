@@ -1,10 +1,10 @@
 # Releasing
 
-The repository is currently private. **Public npm publication is deferred** until the owner completes the [public release checklist](./docs/public-release-checklist.md). Preparing versions, builds, and tarballs is safe to do privately; none of the preparation commands publishes, creates a tag, or changes repository visibility.
+Public npm publication requires completing the [public release checklist](./docs/public-release-checklist.md). The preparation commands below do not publish packages or create tags.
 
 ## Version policy
 
-Core, deck, the editor CLI, and React use one coordinated version, including prerelease suffixes. The private root manifest uses the same version for tooling. The private showcase is not published and does not need a coordinated version.
+Core, deck, the editor CLI, and React use one coordinated version, including prerelease suffixes. The private root workspace uses the same version for tooling. The showcase package is not published and does not need a coordinated version.
 
 Use `0.1.0-alpha.1`, `0.1.0-alpha.2`, and so on for the first alpha cycle. Publish prereleases to the `next` dist-tag. Use `latest` only for a deliberately approved non-prerelease release. Breaking changes need migration notes even during `0.x`.
 
@@ -44,7 +44,7 @@ git push origin v0.1.0-alpha.1
 
 Publish only from a provenance-capable runner checking out that tag. The runner must use the committed lockfile, Node 24.11.1, pnpm 12.4.1, and npm 11.5.1 or newer. Use GitHub Actions with `contents: read` and `id-token: write`, and configure the matching npm trusted publisher before using OIDC. Initial package registration or alternate publishing credentials remain owner setup work.
 
-npm provenance requires a public source repository and matching package repository metadata. This is why publication is not part of private preparation. See npm's [trusted publishing instructions](https://docs.npmjs.com/trusted-publishers/) and [provenance requirements](https://docs.npmjs.com/generating-provenance-statements/).
+npm provenance requires a public source repository and matching package repository metadata. See npm's [trusted publishing instructions](https://docs.npmjs.com/trusted-publishers/) and [provenance requirements](https://docs.npmjs.com/generating-provenance-statements/).
 
 In that runner, rebuild and pack from the release tag:
 

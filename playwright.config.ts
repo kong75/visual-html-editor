@@ -21,7 +21,9 @@ export default defineConfig({
   timeout: 30_000,
   expect: { timeout: 7_000 },
   fullyParallel: false,
-  workers: process.env.CI ? 2 : undefined,
+  // The all-browser release gate otherwise scales to the host CPU count and can
+  // starve browser processes on high-core development machines.
+  workers: process.env.CI ? 2 : allBrowsers ? 6 : undefined,
   reporter: [['list']],
   snapshotPathTemplate: '{testDir}/snapshots/{testFilePath}/{arg}-{projectName}{ext}',
   use: {

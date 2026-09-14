@@ -1,6 +1,6 @@
 # Contributing
 
-The repository is currently in private development. Collaborators use the same review and validation workflow planned for the public alpha. Read the [contributor map](./docs/contributor-map.md) and [governance](./GOVERNANCE.md) before making a broad change.
+Contributions are welcome during the public alpha. Read the [contributor map](./docs/contributor-map.md) and [governance](./GOVERNANCE.md) before making a broad change.
 
 ## Development setup
 
