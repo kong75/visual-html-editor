@@ -20,7 +20,7 @@ Visual HTML brings visual editing to the HTML your product already has. Let user
 
 ![Animated Visual HTML web editing demo showing button text and style changes, a responsive mobile preview, and the resulting HTML.](./docs/images/readme-demos/web.webp)
 
-> **Pre-release alpha.** The core editing workflow is available for evaluation and early integration. APIs and compatibility are still evolving toward `1.0`. Until the first npm release is published, use the local workspace. See the [roadmap](./ROADMAP.md) and [API stability policy](./docs/versioning.md).
+> **Pre-release alpha.** The core editing workflow is available for evaluation and early integration. APIs and compatibility are still evolving toward `1.0`. Install the current prerelease from npm with the `next` tag. See the [roadmap](./ROADMAP.md) and [API stability policy](./docs/versioning.md).
 
 ## When to use it
 
@@ -78,13 +78,13 @@ The showcase runs locally without an account or a Visual HTML backend. Imported 
 
 ### Try your own HTML
 
-After the npm package is published, open a real document without cloning this repository or adding a project dependency:
+Open a real document without cloning this repository or adding a project dependency:
 
 ```bash
-npx @visual-html/editor ./document.html
+npx @visual-html/editor@next ./document.html
 ```
 
-The command starts a temporary localhost editor, resolves relative assets from the document folder, and writes back only when you choose **Save file**. It does not install samples or change your project manifest. Until the first npm release, run the same CLI from this workspace with `pnpm --filter @visual-html/editor build` followed by `node packages/editor/bin/visual-html.mjs ./document.html`.
+The command starts a temporary localhost editor, resolves relative assets from the document folder, and writes back only when you choose **Save file**. It does not install samples or change your project manifest.
 
 ## Embed in your product
 
@@ -114,7 +114,7 @@ This example keeps edits in React state. Your application handles persistence. U
 
 For save, navigation, or close boundaries, keep an `HtmlEditorHandle` ref and call `await editorRef.current.flush()`. It commits active typing and waits for asynchronous `onChange` handlers. `baseUrl` resolves relative preview assets without changing exported source, and `readOnly` switches the mounted editor into an inspectable preview. See the [React integration lifecycle](./docs/integration-lifecycle.md).
 
-The local showcase resolves these packages from workspace source. For a separate application before npm publication, follow the [local package integration guide](./docs/getting-started.md#try-the-packaged-react-integration).
+The local showcase resolves these packages from workspace source. For a separate application, install the prerelease packages with the `next` tag and follow the [package integration guide](./docs/getting-started.md#try-the-packaged-react-integration).
 
 ### Own and edit the interface source
 
