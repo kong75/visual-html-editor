@@ -3,6 +3,9 @@ import { BrandMark } from '../../../packages/react/src/brand-mark';
 import ribbonArtwork from './assets/chrome-ribbon.webp';
 import { EditingDemo } from './editing-demo';
 
+const repositoryUrl = 'https://github.com/kong75/visual-html-editor';
+const npmUrl = 'https://www.npmjs.com/org/visual-html';
+
 function Arrow({ diagonal = false }: { diagonal?: boolean }) {
   return <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d={diagonal ? 'M6 18 18 6M6 6h12v12' : 'M4 12h15m-6-6 6 6-6 6'} stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 }
@@ -46,6 +49,7 @@ export function LandingPage() {
             <a href="#playground">The canvas</a>
             <a href="#principles">The philosophy</a>
             <a href="#developers">For developers <span className="nav-code" aria-hidden="true">&lt;/&gt;</span></a>
+            <a href={repositoryUrl} target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
           </nav>
           <a className="nav-open" href="#/editor">Open editor <Arrow diagonal /></a>
         </header>
@@ -66,7 +70,7 @@ export function LandingPage() {
               <h1>Make HTML<br /><em>feel alive.</em></h1>
               <p className="landing-hero__lede">Step out of the code. Into your creative element.<br />A visual playground for emails, slides, and the web.</p>
               <div className="landing-hero__actions"><a className="button-light" href="#/editor?import=1&amp;profile=web">Try your HTML <Arrow diagonal /></a><a className="hero-explore" href="#playground"><span className="play-icon" aria-hidden="true">▷</span> Explore examples</a></div>
-              <div className="hero-fineprint"><span>No sign-up. Just start.</span><span className="fineprint-line" /><span>Free & open source</span></div>
+              <div className="hero-fineprint"><span>No sign-up. Just start.</span><span className="fineprint-line" /><a href={repositoryUrl} target="_blank" rel="noreferrer">Open source on GitHub ↗</a><span className="fineprint-line" /><a href={npmUrl} target="_blank" rel="noreferrer">Available on npm ↗</a></div>
             </div>
             <div className="hero-bottom"><span>BUILT FOR THE WAY YOU CREATE.</span><div><span>HTML, with a human touch.</span><a href="#playground" aria-label="Explore the canvas below">↓</a></div></div>
           </section>
@@ -92,11 +96,10 @@ export function LandingPage() {
 
           <section className="landing-closing"><div className="closing-orbit" aria-hidden="true" /><p className="eyebrow">A BLANK CANVAS IS A BEAUTIFUL BEGINNING.</p><h2>What will you<br /><em>make of it?</em></h2><a className="button-light" href="#/editor?import=1&amp;profile=web">Try your HTML <Arrow diagonal /></a><span className="closing-footnote">NO SIGN-UP. NO LIMITS ON YOUR IMAGINATION.</span></section>
         </main>
-        <footer className="landing-footer section-wrap"><div className="footer-top"><Wordmark footer /><span>Code is the beginning.<br /><em>Creation is the point.</em></span><a href="#top">Back to the top <Arrow diagonal /></a></div><div className="footer-bottom"><span>INDEPENDENT TOOLS FOR INDEPENDENT MINDS.</span><a href="https://opensource.org/license/mit" target="_blank" rel="noreferrer">OPEN SOURCE · MIT LICENSE ↗</a><span>© 2026 VISUAL HTML</span></div></footer>
+        <footer className="landing-footer section-wrap"><div className="footer-top"><Wordmark footer /><span>Code is the beginning.<br /><em>Creation is the point.</em></span><a href="#top">Back to the top <Arrow diagonal /></a></div><div className="footer-bottom"><span>INDEPENDENT TOOLS FOR INDEPENDENT MINDS.</span><a href={repositoryUrl} target="_blank" rel="noreferrer">OPEN SOURCE · MIT · GITHUB ↗</a><span>© 2026 VISUAL HTML</span></div></footer>
       </div>
     </div>
   );
 }
-
 
 

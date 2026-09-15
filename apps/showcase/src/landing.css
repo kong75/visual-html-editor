@@ -36,7 +36,9 @@
 .hero-explore { display: flex; align-items: center; gap: 10px; color: #ded8e9; font-size: 11px; text-decoration: none; }
 .play-icon { display: grid; width: 27px; height: 27px; place-items: center; border: 1px solid #ffffff30; border-radius: 50%; font-size: 15px; transition: transform 200ms, border-color 200ms; }
 .hero-explore:hover .play-icon { border-color: #c4afff; transform: rotate(-45deg); }
-.hero-fineprint { display: flex; align-items: center; gap: 12px; margin-top: 23px; color: #97909f; font-size: 9px; animation: copy-enter 800ms 420ms both; }
+.hero-fineprint { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 23px; color: #97909f; font-size: 9px; animation: copy-enter 800ms 420ms both; }
+.hero-fineprint a { color: #bdb5c8; text-underline-offset: 3px; transition: color 180ms ease; }
+.hero-fineprint a:hover { color: #fff; }
 .fineprint-line { width: 20px; height: 1px; background: #4d4556; }
 .hero-bottom { position: absolute; right: 0; bottom: 31px; left: 0; display: flex; align-items: center; justify-content: space-between; color: #938b9e; font-size: 8px; letter-spacing: 1.4px; }
 .hero-bottom > div { display: flex; align-items: center; gap: 27px; }
@@ -130,7 +132,7 @@
 
 @media (min-width: 1700px) { .landing-hero { min-height: 820px; padding-top: 115px; }.hero-art { left: 36%; width: 90%; } }
 @media (max-width: 1100px) {
-  .section-wrap, .landing-nav, .landing-hero { width: calc(100% - 64px); }.landing-nav nav { gap: 22px; padding-left: 0; }.landing-nav { gap: 20px; }.landing-nav nav a:last-child { display: none; }
+  .section-wrap, .landing-nav, .landing-hero { width: calc(100% - 64px); }.landing-nav nav { gap: 22px; padding-left: 0; }.landing-nav { gap: 20px; }.landing-nav nav a:nth-child(3) { display: none; }
   .landing-hero { min-height: 670px; padding-top: 80px; }.hero-art { top: 76px; left: 37%; width: 96%; }.landing-hero h1 { font-size: 9.2vw; }
   .format-strip { padding-inline: 32px; gap: 20px; }.format-strip > div { gap: 10px; font-size: 12px; }.format-strip > span { font-size: 7px; }
   .landing-demo.section-wrap { padding: 80px 32px 42px; }.demo-controls__hint { display: none; }
