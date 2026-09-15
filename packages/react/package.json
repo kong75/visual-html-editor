@@ -1,6 +1,6 @@
 {
   "name": "@visual-html/react",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "description": "React UI adapter for Visual HTML Editor.",
   "license": "MIT",
   "keywords": [

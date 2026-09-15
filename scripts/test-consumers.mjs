@@ -1,4 +1,4 @@
-import { spawnSync } from 'node:child_process';
+import spawn from 'cross-spawn';
 import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -10,9 +10,7 @@ const artifacts = path.join(root, '.artifacts', 'consumer-tests');
 const tarballs = path.join(artifacts, 'tarballs');
 
 function run(args, cwd = root) {
-  const command = process.platform === 'win32' ? (process.env.ComSpec ?? 'cmd.exe') : 'pnpm';
-  const commandArgs = process.platform === 'win32' ? ['/d', '/s', '/c', 'pnpm', ...args] : args;
-  const result = spawnSync(command, commandArgs, { cwd, stdio: 'inherit', shell: false });
+  const result = spawn.sync('pnpm', args, { cwd, stdio: 'inherit', shell: false });
   if (result.error) throw result.error;
   if (result.status !== 0) {
     throw new Error(`pnpm ${args.join(' ')} failed with exit code ${result.status ?? 'unknown'}.`);

@@ -1,0 +1,95 @@
+name: Publish npm prerelease
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Annotated release tag to publish (for example, v0.1.0-alpha.1)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: npm-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.repository == 'kong75/visual-html-editor'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
+    steps:
+      - name: Checkout the release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.tag }}
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          version: 12.4.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24.11.1
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Use an OIDC-capable npm CLI
+        run: npm install --global npm@11.5.1
+
+      - name: Verify release tag and coordinated versions
+        run: |
+          node --input-type=module <<'EOF'
+          import { readFile } from 'node:fs/promises';
+          const files = ['package.json', 'packages/core/package.json', 'packages/deck/package.json', 'packages/editor/package.json', 'packages/react/package.json'];
+          const manifests = await Promise.all(files.map(async (file) => JSON.parse(await readFile(file, 'utf8'))));
+          const version = manifests[0].version;
+          if (!version.includes('-')) throw new Error(`Refusing to publish non-prerelease version ${version} from this workflow.`);
+          if (manifests.some((manifest) => manifest.version !== version)) throw new Error('Release package versions are not coordinated.');
+          if (process.env.RELEASE_TAG !== `v${version}`) throw new Error(`Tag ${process.env.RELEASE_TAG} does not match package version ${version}.`);
+          EOF
+
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build, pack, and test consumers
+        run: pnpm test:consumers
+
+      - name: Verify public API and package types
+        run: |
+          pnpm test:api
+          pnpm test:types
+
+      - name: Review npm publication manifests
+        run: |
+          for package in core deck react editor; do
+            npm publish ".artifacts/consumer-tests/tarballs/visual-html-${package}-${RELEASE_TAG#v}.tgz" --access public --tag next --dry-run
+          done
+
+      - name: Preserve verified release tarballs
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: npm-release-${{ inputs.tag }}
+          path: .artifacts/consumer-tests/tarballs/*.tgz
+          include-hidden-files: true
+          retention-days: 30
+
+      - name: Publish packages in dependency order
+        run: |
+          npm publish ".artifacts/consumer-tests/tarballs/visual-html-core-${RELEASE_TAG#v}.tgz" --access public --tag next
+          npm publish ".artifacts/consumer-tests/tarballs/visual-html-deck-${RELEASE_TAG#v}.tgz" --access public --tag next
+          npm publish ".artifacts/consumer-tests/tarballs/visual-html-react-${RELEASE_TAG#v}.tgz" --access public --tag next
+          npm publish ".artifacts/consumer-tests/tarballs/visual-html-editor-${RELEASE_TAG#v}.tgz" --access public --tag next
+
+      - name: Verify registry versions
+        run: |
+          for package in core deck react editor; do
+            test "$(npm view "@visual-html/${package}@${RELEASE_TAG#v}" version)" = "${RELEASE_TAG#v}"
+          done

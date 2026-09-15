@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "name": "editor",
   "description": "Editable React source for the Visual HTML workspace.",
-  "registryVersion": "0.1.0",
+  "registryVersion": "0.1.0-alpha.1",
   "dependencies": {
     "@base-ui/react": "^1.8.0",
-    "@visual-html/core": "^0.1.0",
+    "@visual-html/core": "^0.1.0-alpha.1",
     "lucide-react": "^1.46.0"
   },
   "files": [

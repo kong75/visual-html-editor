@@ -1,6 +1,6 @@
 {
   "name": "@visual-html/core",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "description": "Framework-neutral source engine for Visual HTML Editor.",
   "license": "MIT",
   "keywords": [

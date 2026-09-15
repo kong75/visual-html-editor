@@ -1,6 +1,6 @@
 {
   "name": "@visual-html/editor",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "description": "Open a local HTML file in Visual HTML Editor with one command.",
   "license": "MIT",
   "keywords": [

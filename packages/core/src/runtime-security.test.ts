@@ -37,12 +37,14 @@ describe('runtime preview hardening', () => {
   it('removes event handlers, srcdoc, executable URLs, and executable inline CSS', () => {
     const hardened = hardenRuntimeHtml(`<main onclick="alert(1)" style="background:url(javascript:alert(1))">
       <a id="bad" href=" java\nscript:alert(1)">Bad</a>
+      <a id="data-navigation" href="data:text/html,&lt;script&gt;alert(1)&lt;/script&gt;">Data</a>
       <form action="vbscript:run"><button formaction="javascript:run">Go</button></form>
+      <svg><a xlink:href="data:text/html,unsafe">SVG data</a></svg>
       <img src="data:image/png;base64,AA" onerror="alert(1)" srcdoc="bad">
     </main>`);
 
     expect(hardened).not.toMatch(/\s(?:onclick|onerror|srcdoc|style)=/i);
-    expect(hardened).not.toMatch(/(?:href|action|formaction)="/i);
+    expect(hardened).not.toMatch(/(?:href|action|formaction|xlink:href)="/i);
     expect(hardened).toContain('src="data:image/png;base64,AA"');
   });
 

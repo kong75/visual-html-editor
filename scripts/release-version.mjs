@@ -11,5 +11,5 @@ const prepared = await prepareReleaseVersion(root, version);
 if (version === '--check') {
   console.log(`All release manifests use ${prepared}.`);
 } else {
-  console.log(`Prepared ${version} in the root and three package manifests. Update CHANGELOG.md, run pnpm install --lockfile-only, and review the diff. Nothing was published or tagged.`);
+  console.log(`Prepared ${version} in the root and four package manifests. Update CHANGELOG.md, run pnpm install --lockfile-only, and review the diff. Nothing was published or tagged.`);
 }

@@ -4,6 +4,10 @@ This project follows semantic versioning once packages are published.
 
 ## Unreleased
 
+No changes yet.
+
+## 0.1.0-alpha.1 - 2026-09-15
+
 ### Added
 
 - Contributor map, current architecture guide, explicit compatibility policy, and release guidance.
@@ -37,7 +41,7 @@ This project follows semantic versioning once packages are published.
 
 ### Known limitations
 
-- Public packages have not completed a prerelease compatibility cycle.
+- This is the first public prerelease. APIs may still change before 1.0; breaking changes will be documented here with migration guidance.
 
 ### Fixed
 

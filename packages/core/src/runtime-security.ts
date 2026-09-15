@@ -33,7 +33,9 @@ function hardenNode(node: any): void {
       if (name === 'style' && executableCss(attribute.value)) return false;
       if (urlAttributes.has(name)) {
         const value = compactUrl(attribute.value);
-        if (value.startsWith('javascript:') || value.startsWith('vbscript:')) return false;
+        const executableScheme = value.startsWith('javascript:') || value.startsWith('vbscript:');
+        const unsafeDataNavigation = value.startsWith('data:') && name !== 'src';
+        if (executableScheme || unsafeDataNavigation) return false;
       }
       return true;
     });

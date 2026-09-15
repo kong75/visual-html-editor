@@ -1,6 +1,6 @@
 {
   "name": "@visual-html/deck",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "description": "Framework-neutral multi-slide document layer for Visual HTML Editor.",
   "license": "MIT",
   "keywords": [
