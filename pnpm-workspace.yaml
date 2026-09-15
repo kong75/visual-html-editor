@@ -6,6 +6,9 @@ autoInstallPeers: true
 strictPeerDependencies: true
 linkWorkspacePackages: true
 
+overrides:
+  qs: 6.16.0
+
 allowBuilds:
   'esbuild@0.28.2': true
 
