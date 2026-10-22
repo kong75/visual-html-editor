@@ -32,10 +32,10 @@ export default defineConfig({
         'packages/**/src/types.ts'
       ],
       thresholds: {
-        statements: 45,
-        branches: 38,
-        functions: 47,
-        lines: 46,
+        statements: 53,
+        branches: 45,
+        functions: 52,
+        lines: 55,
         'packages/core/src/**': {
           statements: 90,
           branches: 80,
@@ -49,10 +49,22 @@ export default defineConfig({
           lines: 95
         },
         'packages/react/src/**': {
-          statements: 4,
-          branches: 1,
-          functions: 5,
-          lines: 4
+          statements: 20,
+          branches: 15,
+          functions: 17,
+          lines: 21
+        },
+        'packages/react/src/canvas/selection.ts': {
+          statements: 90,
+          branches: 80,
+          functions: 100,
+          lines: 95
+        },
+        'packages/react/src/canvas/text-edit-history.ts': {
+          statements: 95,
+          branches: 85,
+          functions: 100,
+          lines: 95
         }
       }
     }
