@@ -1,12 +1,10 @@
 import { runtimeHitCandidates, cycleHitCandidate, runtimePointerPoint } from './selection.js';
 import { layoutDeltaMapper } from './geometry.js';
-import type { createCanvasRichText } from './rich-text.js';
-
-import type { CanvasRuntimeContext } from './runtime-types.js';
+import type { BeginInlineEdit, CanvasRuntimeContext } from './runtime-types.js';
 
 type PointerContext = Pick<CanvasRuntimeContext, 'controller' | 'snapshot' | 'doc' | 'attrs' | 'frame' | 'setNotice' | 'selection'>;
 
-export function createCanvasPointer(context: PointerContext, beginInlineEdit: ReturnType<typeof createCanvasRichText>['beginInlineEdit']) {
+export function createCanvasPointer(context: PointerContext, beginInlineEdit: BeginInlineEdit) {
   const { controller, snapshot, doc, attrs, frame, setNotice } = context;
   const { selectedKeyRef, overlayRef, resizeHandleRef, selectNode, updateOverlay, syncOverlay } = context.selection;
 

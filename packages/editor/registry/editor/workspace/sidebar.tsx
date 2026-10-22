@@ -1,16 +1,16 @@
 import React from 'react';
-import type { EditorSnapshot, ParsedNode } from '@visual-html/core';
+import type { EditorSnapshot, NodeKey, ParsedNode } from '@visual-html/core';
 import { Code2, MousePointer2 } from 'lucide-react';
 import { resolveElementBehavior, type ElementBehaviorResolver } from '../element-behavior.js';
-import { InspectorBody } from '../inspector/body.js';
-import type { useEditorOutline } from '../outline/use-outline.js';
-import type { useInspectorProperties } from '../inspector/use-properties.js';
+import { InspectorBody, type InspectorBodyProps } from '../inspector/body.js';
 
 interface EditorSidebarProps {
   snapshot: EditorSnapshot;
   selectedNode: ParsedNode | undefined;
-  outline: ReturnType<typeof useEditorOutline>;
-  inspector: ReturnType<typeof useInspectorProperties>;
+  outline: { outlineNodes: Map<NodeKey, ParsedNode> };
+  inspector: Pick<InspectorBodyProps,
+    'propertyDrafts' | 'computedStyleValues' | 'expandedBoxControl' | 'setExpandedBoxControl'
+    | 'updateStyleDraft' | 'applyStyle' | 'applyAttribute'>;
   elementBehaviorResolvers: readonly ElementBehaviorResolver[];
   sidebarHeader?: React.ReactNode;
   onImage: () => void;

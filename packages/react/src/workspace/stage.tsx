@@ -1,9 +1,8 @@
 import React from 'react';
-import type { EditorProfile, ParsedNode } from '@visual-html/core';
+import type { AspectRatioOption, EditorProfile, ParsedNode } from '@visual-html/core';
 import { Code2 } from 'lucide-react';
-import type { useCanvasSelection } from '../canvas/use-selection.js';
-import type { useCanvasLayout } from '../canvas/use-layout.js';
-import type { useTextEditing } from '../canvas/use-text-editing.js';
+import type { CanvasSelectionRuntime, OverlayRect, TextEditingRuntime } from '../canvas/runtime-types.js';
+import type { RichTextSelectionState } from '../canvas/selection.js';
 import { SelectionFormatting } from './selection-toolbar.js';
 
 interface EditorStageProps {
@@ -12,9 +11,20 @@ interface EditorStageProps {
   setMode: (mode: 'visual' | 'source') => void;
   profile: EditorProfile;
   selectedNode: ParsedNode | undefined;
-  selection: ReturnType<typeof useCanvasSelection>;
-  textEditing: ReturnType<typeof useTextEditing>;
-  layout: ReturnType<typeof useCanvasLayout>;
+  selection: {
+    overlay: OverlayRect | null;
+    runtime: Pick<CanvasSelectionRuntime, 'iframeRef' | 'overlayRef' | 'resizeHandleRef'>;
+  };
+  textEditing: {
+    richTextSelection: RichTextSelectionState | null;
+    runtime: Pick<TextEditingRuntime, 'toggleInlineMark' | 'setInlineStyles'>;
+  };
+  layout: {
+    aspect: AspectRatioOption;
+    canvasScale: number;
+    stageViewportRef: React.RefObject<HTMLDivElement | null>;
+    startResize: React.PointerEventHandler<HTMLButtonElement>;
+  };
   sourceDraft: string;
   setSourceDraft: (source: string) => void;
   applySource: () => Promise<void>;
