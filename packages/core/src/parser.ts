@@ -1,4 +1,4 @@
-import { parse, parseFragment } from 'parse5';
+import { defaultTreeAdapter, parse, parseFragment, type DefaultTreeAdapterTypes } from 'parse5';
 import type {
   DocumentIndex,
   FileId,
@@ -41,17 +41,18 @@ const optionalEndTags = new Set([
   'colgroup', 'thead', 'tbody', 'tfoot', 'tr', 'td', 'th'
 ]);
 
-function hasDocumentStructure(document: any): boolean {
-  if (document.childNodes.some((node: any) => node.nodeName === '#documentType')) return true;
-  const html = document.childNodes.find((node: any) => node.tagName === 'html');
+function hasDocumentStructure(document: DefaultTreeAdapterTypes.Document): boolean {
+  if (document.childNodes.some((node) => node.nodeName === '#documentType')) return true;
+  const html = document.childNodes.find((node): node is DefaultTreeAdapterTypes.Element =>
+    defaultTreeAdapter.isElementNode(node) && node.tagName === 'html');
   // Attributes can be authored on a later <body>/<html> tag even when the
   // parser already created an implied wrapper without a source location.
-  const authored = (node: any): boolean => Boolean(node?.sourceCodeLocation || node?.attrs?.length);
-  return authored(html) || Boolean(html?.childNodes.some((node: any) =>
-    ['head', 'body'].includes(node.tagName) && authored(node)));
+  const authored = (node: DefaultTreeAdapterTypes.Element | undefined): boolean => Boolean(node?.sourceCodeLocation || node?.attrs.length);
+  return authored(html) || Boolean(html?.childNodes.some((node) =>
+    defaultTreeAdapter.isElementNode(node) && ['head', 'body'].includes(node.tagName) && authored(node)));
 }
 
-function toRange(location: { startOffset: number; endOffset: number } | undefined): SourceRange | undefined {
+function toRange(location: { startOffset: number; endOffset: number } | null | undefined): SourceRange | undefined {
   return location
     ? { start: location.startOffset, end: location.endOffset }
     : undefined;
@@ -71,9 +72,9 @@ function translateOffset(offset: number, patches: readonly SourcePatch[]): numbe
   return translated;
 }
 
-function collectText(node: any): string {
-  if (node.nodeName === '#text') return node.value ?? '';
-  return (node.childNodes ?? []).map((child: any) => collectText(child)).join('');
+function collectText(node: DefaultTreeAdapterTypes.Node): string {
+  if (defaultTreeAdapter.isTextNode(node)) return node.value;
+  return 'childNodes' in node ? node.childNodes.map(collectText).join('') : '';
 }
 
 function buildPreviousLookup(
@@ -100,7 +101,7 @@ function buildPreviousLookup(
 export function parseHtmlSource(source: string, options: ParseOptions): DocumentIndex {
   const document = parse(source, { sourceCodeLocationInfo: true });
   const fragment = !hasDocumentStructure(document);
-  const tree: any = fragment
+  const tree = fragment
     ? parseFragment(source, { sourceCodeLocationInfo: true })
     : document;
   const patches = options.patches?.filter((patch) => patch.fileId === options.fileId) ?? [];
@@ -109,9 +110,9 @@ export function parseHtmlSource(source: string, options: ParseOptions): Document
   const nodes = new Map<NodeKey, MutableParsedNode>();
   const rootKeys: NodeKey[] = [];
 
-  const visit = (rawNode: any, parentKey?: NodeKey): void => {
+  const visit = (rawNode: DefaultTreeAdapterTypes.Node, parentKey?: NodeKey): void => {
     let currentParentKey = parentKey;
-    if (typeof rawNode.tagName === 'string') {
+    if (defaultTreeAdapter.isElementNode(rawNode)) {
       const location = rawNode.sourceCodeLocation;
       const range = toRange(location);
       const tagName = rawNode.tagName.toLowerCase();
@@ -142,9 +143,7 @@ export function parseHtmlSource(source: string, options: ParseOptions): Document
         ? { start: startTagRange.end, end: innerEnd }
         : undefined;
 
-      const childElements = (rawNode.childNodes ?? []).filter(
-        (child: any) => typeof child.tagName === 'string'
-      );
+      const childElements = rawNode.childNodes.filter(defaultTreeAdapter.isElementNode);
       const parsedNode: MutableParsedNode = {
         key,
         revision: options.revision,
@@ -167,7 +166,9 @@ export function parseHtmlSource(source: string, options: ParseOptions): Document
       currentParentKey = key;
     }
 
-    for (const child of rawNode.childNodes ?? []) visit(child, currentParentKey);
+    if ('childNodes' in rawNode) {
+      for (const child of rawNode.childNodes) visit(child, currentParentKey);
+    }
   };
 
   visit(tree);
