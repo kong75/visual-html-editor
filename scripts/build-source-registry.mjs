@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { registryIndex } from './source-registry.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const reactRoot = path.join(root, 'packages', 'react');
@@ -23,15 +24,6 @@ async function collectFiles(directory, prefix = '') {
     else if (!entry.name.includes('.test.') && !excludedFiles.has(relative)) files.push(relative);
   }
   return files.sort();
-}
-
-function registryIndex(source) {
-  const exports = source
-    .split(/\r?\n/)
-    .filter((line) => !line.includes('DeckNavigator') && !line.includes('useDeckSnapshot'))
-    .join('\n')
-    .trimStart();
-  return `import './styles.css';\n\n${exports}`;
 }
 
 function digest(source) {
@@ -66,7 +58,8 @@ for (const relative of files) {
     await writeFile(targetPath, source, 'utf8');
     hashes[relative] = digest(source);
   } else if (relative === 'index.ts') {
-    const source = registryIndex(await readFile(sourcePath, 'utf8'));
+    const excludedModules = new Set([...excludedFiles].map((file) => `./${file.replace(/\.tsx?$/, '.js')}`));
+    const source = registryIndex(await readFile(sourcePath, 'utf8'), excludedModules);
     await writeFile(targetPath, source, 'utf8');
     hashes[relative] = digest(source);
   } else {
