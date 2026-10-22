@@ -46,6 +46,8 @@ const selection = editorRef.current?.getTextSelection();
 
 Host applications can inject product-specific controls into the top row with `toolbarContent` and contextual inspector content with `sidebarHeader`.
 
+Import `BrandMark` from `@visual-html/react` to reuse the decorative Visual HTML mark in a host shell. It accepts an optional `className`, inherits `currentColor`, and is hidden from assistive technology; give its containing link or button an accessible name when needed.
+
 Use `elementBehaviorResolvers` to override semantic labels and whether a source element edits itself or delegates to a parent rich-text region. Native links and buttons are atomic by default; formatting wrappers such as `<strong>` and `<span>` delegate to their nearest rich-text region.
 
 React and React DOM are peer dependencies. Create the document controller with `@visual-html/core` and keep it stable for the lifetime of the editing session.

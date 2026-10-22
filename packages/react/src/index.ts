@@ -1,3 +1,4 @@
+export { BrandMark } from './brand-mark.js';
 export { DeckNavigator } from './deck-navigator.js';
 export { resolveElementBehavior } from './element-behavior.js';
 export { HtmlEditor } from './html-editor.js';

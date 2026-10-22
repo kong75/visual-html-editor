@@ -1,5 +1,7 @@
 import './styles.css';
 
+export { BrandMark } from './brand-mark.js';
+
 export { resolveElementBehavior } from './element-behavior.js';
 export { HtmlEditor } from './html-editor.js';
 export { VisualHtmlEditor } from './visual-html-editor.js';

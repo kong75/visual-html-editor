@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { EditorController } from '@visual-html/core';
 import { DeckController, exportClaudeDesignDeck, importClaudeDesignDeck, type DeckSnapshot } from '@visual-html/deck';
-import { DeckNavigator, VisualHtmlEditor, type HtmlImportAdapter, type VisualHtmlEditorHandle } from '@visual-html/react';
+import { BrandMark, DeckNavigator, VisualHtmlEditor, type HtmlImportAdapter, type VisualHtmlEditorHandle } from '@visual-html/react';
 import { showcaseProfiles, showcaseSlidesDeck, type ProfileId } from './samples';
-import { BrandMark } from '../../../packages/react/src/brand-mark';
 
 interface ControllerState {
   profileId: ProfileId;

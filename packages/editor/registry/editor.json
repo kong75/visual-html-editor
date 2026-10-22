@@ -73,7 +73,7 @@
     "html-editor.tsx": "80775e4a440cae08a2060a1da40434d2f957e6dffdd0c09b558716f2e9642aec",
     "import/html-import-dialog.tsx": "8e490e8d143dff7e059a46cb5ecd42c7393370da863d9b133b78c5be03de7835",
     "import/use-html-import.ts": "928b04dfbe034a3d8995331e06c7d5f8f778016ce217ca81a3cb7db4db55b894",
-    "index.ts": "e3317537e52472b1253bfb56bddd1ff2adba8e35175a9658d6e755b6b844ac6f",
+    "index.ts": "15efe44e96033f92eb18caf11c8d1507b592cb23b2dcfd1f817c2bb10c18bd2d",
     "inspector/body.tsx": "bfb4ca0354b3405de3cf605232f7039099076706d546d2f3e4364c755083b7d7",
     "inspector/controls.tsx": "55a0b6382f8ce0ad184f34080f7e92e5d294cb55396a40d9afb113f0dcba64ee",
     "inspector/font-options.ts": "22cb0a0bd9e4df57f81e7bfd752debac7b2dc2c114b9add80d0f3730b927104e",

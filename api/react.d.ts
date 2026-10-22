@@ -4,6 +4,12 @@
 // Entry ./styles.css: ./styles.css.d.ts
 // Entry package.types: ./dist/index.d.ts
 
+// File: dist/brand-mark.d.ts
+/** The folded V: two code-like strokes meeting on a single canvas. */
+export declare function BrandMark({ className }: {
+    className?: string;
+}): import("react").JSX.Element;
+
 // File: dist/deck-navigator.d.ts
 import React from 'react';
 import type { DeckController, SlideId } from '@visual-html/deck';
@@ -129,6 +135,7 @@ export type HtmlEditorHandle = VisualHtmlEditorHandle;
 export declare const HtmlEditor: React.ForwardRefExoticComponent<HtmlEditorProps & React.RefAttributes<VisualHtmlEditorHandle>>;
 
 // File: dist/index.d.ts
+export { BrandMark } from './brand-mark.js';
 export { DeckNavigator } from './deck-navigator.js';
 export { resolveElementBehavior } from './element-behavior.js';
 export { HtmlEditor } from './html-editor.js';
