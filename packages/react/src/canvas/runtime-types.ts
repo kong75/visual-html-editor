@@ -7,11 +7,14 @@ import type { TextEditHistory } from './text-edit-history.js';
 
 export interface OverlayRect { left: number; top: number; width: number; height: number }
 
+// A structural ref works with both React 18 and 19 JSX ref contracts.
+export interface CanvasRef<T> { current: T | null }
+
 export interface CanvasSelectionRuntime {
-  iframeRef: RefObject<HTMLIFrameElement | null>;
-  selectedKeyRef: RefObject<NodeKey | null>;
-  overlayRef: RefObject<HTMLDivElement | null>;
-  resizeHandleRef: RefObject<HTMLButtonElement | null>;
+  iframeRef: CanvasRef<HTMLIFrameElement>;
+  selectedKeyRef: CanvasRef<NodeKey>;
+  overlayRef: CanvasRef<HTMLDivElement>;
+  resizeHandleRef: CanvasRef<HTMLButtonElement>;
   selectNode(key: NodeKey | null): void;
   updateOverlay(persist?: boolean): void;
   syncOverlay(): void;
@@ -27,8 +30,8 @@ export interface ActiveRichTextEdit {
 
 export interface TextEditingRuntime {
   // DOM handlers also replace the session; React 18's RefObject is read-only.
-  activeRichTextEditRef: { current: ActiveRichTextEdit | null };
-  richTextSelectionRef: RefObject<RichTextSelectionState | null>;
+  activeRichTextEditRef: CanvasRef<ActiveRichTextEdit>;
+  richTextSelectionRef: CanvasRef<RichTextSelectionState>;
   setRichTextSelection(selection: RichTextSelectionState | null): void;
   commitActiveRichTextEdit(nodeKey?: NodeKey): Promise<boolean>;
   refreshTextHistory(): void;

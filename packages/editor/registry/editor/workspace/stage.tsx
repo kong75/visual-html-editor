@@ -1,7 +1,7 @@
 import React from 'react';
 import type { AspectRatioOption, EditorProfile, ParsedNode } from '@visual-html/core';
 import { Code2 } from 'lucide-react';
-import type { CanvasSelectionRuntime, OverlayRect, TextEditingRuntime } from '../canvas/runtime-types.js';
+import type { CanvasRef, CanvasSelectionRuntime, OverlayRect, TextEditingRuntime } from '../canvas/runtime-types.js';
 import type { RichTextSelectionState } from '../canvas/selection.js';
 import { SelectionFormatting } from './selection-toolbar.js';
 
@@ -22,7 +22,7 @@ interface EditorStageProps {
   layout: {
     aspect: AspectRatioOption;
     canvasScale: number;
-    stageViewportRef: React.RefObject<HTMLDivElement | null>;
+    stageViewportRef: CanvasRef<HTMLDivElement>;
     startResize: React.PointerEventHandler<HTMLButtonElement>;
   };
   sourceDraft: string;
