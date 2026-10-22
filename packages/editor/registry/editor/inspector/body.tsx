@@ -4,7 +4,7 @@ import { InspectorInput, InspectorSelect, InspectorDisclosure } from './controls
 import { fontFamilyOptionsFor } from './font-options.js';
 import { attributeValue } from '../source-node.js';
 
-interface InspectorBodyProps {
+export interface InspectorBodyProps {
   selectedNode: ParsedNode;
   profile: EditorProfile;
   revision: number;

@@ -1,24 +1,9 @@
-import { parseFragment } from 'parse5';
+import { defaultTreeAdapter, parseFragment, type DefaultTreeAdapterTypes, type Token } from 'parse5';
 import { DecodingMode, EntityDecoder, htmlDecodeTree } from 'entities/decode';
 import { setInlineStyleProperty } from './inline-style.js';
 import type { InlineMark, InlineTextStyleProperty, TextRange } from './types.js';
 
-interface SourceLocation {
-  startOffset: number;
-  endOffset: number;
-  startTag?: SourceLocation;
-  endTag?: SourceLocation;
-  attrs?: Record<string, SourceLocation>;
-}
-
-interface HtmlNode {
-  nodeName: string;
-  tagName?: string;
-  value?: string;
-  attrs?: Array<{ name: string; value: string }>;
-  childNodes?: HtmlNode[];
-  sourceCodeLocation?: SourceLocation;
-}
+type HtmlNode = DefaultTreeAdapterTypes.Node;
 
 export interface RichTextSourceEdit {
   start: number;
@@ -70,13 +55,17 @@ export function isInlineMarkTag(tagName: string, mark: InlineMark): boolean {
   return markAliases[mark].has(tagName.toLowerCase());
 }
 
-function locationOf(node: HtmlNode): SourceLocation | undefined {
-  return node.sourceCodeLocation;
+function locationOf(node: HtmlNode): Token.ElementLocation | undefined {
+  return node.sourceCodeLocation ?? undefined;
+}
+
+function childrenOf(node: HtmlNode): readonly DefaultTreeAdapterTypes.ChildNode[] {
+  return 'childNodes' in node ? node.childNodes : [];
 }
 
 function textLength(node: HtmlNode): number {
-  if (node.nodeName === '#text') return node.value?.length ?? 0;
-  return (node.childNodes ?? []).reduce((total, child) => total + textLength(child), 0);
+  if (defaultTreeAdapter.isTextNode(node)) return node.value.length;
+  return childrenOf(node).reduce((total, child) => total + textLength(child), 0);
 }
 
 function selectionOverlaps(start: number, end: number, range: TextRange): boolean {
@@ -133,7 +122,7 @@ function textBoundaryMap(raw: string, decodedLength: number): Array<number | und
   return boundaries;
 }
 
-function splitText(node: HtmlNode, active: boolean, state: TextTransformState): Piece[] {
+function splitText(node: DefaultTreeAdapterTypes.TextNode, active: boolean, state: TextTransformState): Piece[] {
   const location = locationOf(node);
   const value = node.value ?? '';
   const nodeStart = state.cursor;
@@ -174,8 +163,8 @@ function escapeAttribute(value: string): string {
 }
 
 function attributesMatch(left: HtmlNode, right: HtmlNode): boolean {
-  const leftAttributes = new Map((left.attrs ?? []).map((attribute) => [attribute.name, attribute.value]));
-  const rightAttributes = new Map((right.attrs ?? []).map((attribute) => [attribute.name, attribute.value]));
+  const leftAttributes = new Map((defaultTreeAdapter.isElementNode(left) ? left.attrs : []).map((attribute) => [attribute.name, attribute.value]));
+  const rightAttributes = new Map((defaultTreeAdapter.isElementNode(right) ? right.attrs : []).map((attribute) => [attribute.name, attribute.value]));
   if (leftAttributes.size !== rightAttributes.size) return false;
   for (const [name, value] of leftAttributes) {
     if (rightAttributes.get(name) !== value) return false;
@@ -188,8 +177,11 @@ function collectTextSourceEdits(
   editedNode: HtmlNode,
   edits: RichTextSourceEdit[]
 ): boolean {
-  if (sourceNode.nodeName !== editedNode.nodeName || sourceNode.tagName !== editedNode.tagName) return false;
-  if (sourceNode.nodeName === '#text') {
+  if (sourceNode.nodeName !== editedNode.nodeName) return false;
+  if (defaultTreeAdapter.isElementNode(sourceNode)
+    && (!defaultTreeAdapter.isElementNode(editedNode) || sourceNode.tagName !== editedNode.tagName)) return false;
+  if (defaultTreeAdapter.isTextNode(sourceNode)) {
+    if (!defaultTreeAdapter.isTextNode(editedNode)) return false;
     if ((sourceNode.value ?? '') === (editedNode.value ?? '')) return true;
     const location = locationOf(sourceNode);
     if (!location) return false;
@@ -197,15 +189,15 @@ function collectTextSourceEdits(
     return true;
   }
   if (!attributesMatch(sourceNode, editedNode)) return false;
-  const sourceChildren = sourceNode.childNodes ?? [];
-  const editedChildren = editedNode.childNodes ?? [];
+  const sourceChildren = childrenOf(sourceNode);
+  const editedChildren = childrenOf(editedNode);
   if (sourceChildren.length !== editedChildren.length) return false;
   return sourceChildren.every((child, index) => collectTextSourceEdits(child, editedChildren[index], edits));
 }
 
 export function richTextSourceEdits(source: string, edited: string): RichTextSourceEdit[] | null {
-  const sourceFragment = parseFragment(source, { sourceCodeLocationInfo: true }) as unknown as { childNodes: HtmlNode[] };
-  const editedFragment = parseFragment(edited) as unknown as { childNodes: HtmlNode[] };
+  const sourceFragment = parseFragment(source, { sourceCodeLocationInfo: true });
+  const editedFragment = parseFragment(edited);
   const sourceNodes = sourceFragment.childNodes ?? [];
   const editedNodes = editedFragment.childNodes ?? [];
   if (sourceNodes.length !== editedNodes.length) return null;
@@ -220,7 +212,7 @@ function appendChildren(node: HtmlNode, render: (child: HtmlNode) => string, sou
   const end = location?.endTag?.startOffset ?? location?.endOffset ?? start;
   let cursor = start;
   let html = '';
-  for (const child of node.childNodes ?? []) {
+  for (const child of childrenOf(node)) {
     const childLocation = locationOf(child);
     if (!childLocation) continue;
     html += source.slice(cursor, childLocation.startOffset);
@@ -231,7 +223,7 @@ function appendChildren(node: HtmlNode, render: (child: HtmlNode) => string, sou
 }
 
 function transformAdd(node: HtmlNode, active: boolean, state: TransformState): string {
-  if (node.nodeName === '#text') {
+  if (defaultTreeAdapter.isTextNode(node)) {
     return splitText(node, active, state)
       .map((piece) => piece.selected && !piece.active ? `<${state.mark}>${piece.html}</${state.mark}>` : piece.html)
       .join('');
@@ -245,7 +237,7 @@ function transformAdd(node: HtmlNode, active: boolean, state: TransformState): s
     state.cursor = end;
     return rawNode(node, state.source);
   }
-  if (!node.tagName || !location.startTag || !location.endTag) {
+  if (!defaultTreeAdapter.isElementNode(node) || !location.startTag || !location.endTag) {
     state.cursor = end;
     return rawNode(node, state.source);
   }
@@ -269,7 +261,7 @@ function mergePieces(pieces: Piece[]): Piece[] {
 }
 
 function transformRemove(node: HtmlNode, inheritedActive: boolean, state: TransformState): Piece[] {
-  if (node.nodeName === '#text') return splitText(node, inheritedActive, state);
+  if (defaultTreeAdapter.isTextNode(node)) return splitText(node, inheritedActive, state);
 
   const length = textLength(node);
   const start = state.cursor;
@@ -280,7 +272,7 @@ function transformRemove(node: HtmlNode, inheritedActive: boolean, state: Transf
     state.cursor = end;
     return [{ html: rawNode(node, state.source), selected: false, active: inheritedActive }];
   }
-  if (!node.tagName || !location.startTag || !location.endTag) {
+  if (!defaultTreeAdapter.isElementNode(node) || !location.startTag || !location.endTag) {
     state.cursor = end;
     return [{ html: rawNode(node, state.source), selected: selectedAtBoundary, active: inheritedActive }];
   }
@@ -288,7 +280,7 @@ function transformRemove(node: HtmlNode, inheritedActive: boolean, state: Transf
   const isMark = markAliases[state.mark].has(node.tagName.toLowerCase());
   const childPieces: Piece[] = [];
   let childCursor = location.startTag.endOffset;
-  for (const child of node.childNodes ?? []) {
+  for (const child of childrenOf(node)) {
     const childLocation = locationOf(child);
     if (!childLocation) continue;
     if (childLocation.startOffset > childCursor) {
@@ -327,7 +319,7 @@ function selectionIsActive(nodes: readonly HtmlNode[], range: TextRange, mark: I
   let selectedInactiveText = 0;
 
   const visit = (node: HtmlNode, active: boolean): void => {
-    if (node.nodeName === '#text') {
+    if (defaultTreeAdapter.isTextNode(node)) {
       const length = node.value?.length ?? 0;
       const start = cursor;
       const end = start + length;
@@ -337,8 +329,8 @@ function selectionIsActive(nodes: readonly HtmlNode[], range: TextRange, mark: I
       cursor = end;
       return;
     }
-    const nextActive = active || Boolean(node.tagName && markAliases[mark].has(node.tagName.toLowerCase()));
-    for (const child of node.childNodes ?? []) visit(child, nextActive);
+    const nextActive = active || (defaultTreeAdapter.isElementNode(node) && markAliases[mark].has(node.tagName.toLowerCase()));
+    for (const child of childrenOf(node)) visit(child, nextActive);
   };
 
   for (const node of nodes) visit(node, false);
@@ -349,7 +341,7 @@ function selectionIsActive(nodes: readonly HtmlNode[], range: TextRange, mark: I
 }
 
 export function toggleInlineMarkInHtml(source: string, range: TextRange, mark: InlineMark): InlineMarkTransform {
-  const fragment = parseFragment(source, { sourceCodeLocationInfo: true }) as unknown as { childNodes: HtmlNode[] };
+  const fragment = parseFragment(source, { sourceCodeLocationInfo: true });
   const nodes = fragment.childNodes ?? [];
   const active = selectionIsActive(nodes, range, mark);
   const state: TransformState = { source, range, mark, cursor: 0 };
@@ -374,12 +366,12 @@ function styleText(styles: Readonly<Partial<Record<InlineTextStyleProperty, stri
   return value;
 }
 
-function nodeStyle(node: HtmlNode): string {
-  return node.attrs?.find((attribute) => attribute.name.toLowerCase() === 'style')?.value ?? '';
+function nodeStyle(node: DefaultTreeAdapterTypes.Element): string {
+  return node.attrs.find((attribute) => attribute.name.toLowerCase() === 'style')?.value ?? '';
 }
 
 function replaceNodeStartTagStyle(
-  node: HtmlNode,
+  node: DefaultTreeAdapterTypes.Element,
   source: string,
   styles: Readonly<Partial<Record<InlineTextStyleProperty, string>>>
 ): string | undefined {
@@ -407,7 +399,7 @@ interface StyleTransformState extends TextTransformState {
 }
 
 function transformInlineStyles(node: HtmlNode, state: StyleTransformState): string {
-  if (node.nodeName === '#text') {
+  if (defaultTreeAdapter.isTextNode(node)) {
     return splitText(node, false, state)
       .map((piece) => piece.selected ? `<span style="${escapeAttribute(state.styleAttribute)}">${piece.html}</span>` : piece.html)
       .join('');
@@ -421,7 +413,7 @@ function transformInlineStyles(node: HtmlNode, state: StyleTransformState): stri
     state.cursor = end;
     return rawNode(node, state.source);
   }
-  if (!node.tagName || !location.startTag || !location.endTag) {
+  if (!defaultTreeAdapter.isElementNode(node) || !location.startTag || !location.endTag) {
     state.cursor = end;
     return rawNode(node, state.source);
   }
@@ -450,7 +442,7 @@ export function setInlineStylesInHtml(
   range: TextRange,
   styles: Readonly<Partial<Record<InlineTextStyleProperty, string>>>
 ): InlineStyleTransform {
-  const fragment = parseFragment(source, { sourceCodeLocationInfo: true }) as unknown as { childNodes: HtmlNode[] };
+  const fragment = parseFragment(source, { sourceCodeLocationInfo: true });
   const nodes = fragment.childNodes ?? [];
   validateTextRange(nodes, range);
   const styleAttribute = styleText(styles);

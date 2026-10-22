@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { BrandMark } from '../../../packages/react/src/brand-mark';
+import { BrandMark } from '@visual-html/react';
 import ribbonArtwork from './assets/chrome-ribbon.webp';
 import { EditingDemo } from './editing-demo';
 

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type React from 'react';
 import type { EditorController, EditorSnapshot, NodeKey } from '@visual-html/core';
-import type { useCanvasSelection } from './use-selection.js';
+import type { CanvasSelectionRuntime } from './runtime-types.js';
 import { queryRuntimeElement } from './selection.js';
 import { layoutDeltaMapper, layoutSize } from './geometry.js';
 
@@ -10,7 +10,7 @@ interface CanvasLayoutOptions {
   snapshot: EditorSnapshot;
   mode: 'visual' | 'source';
   selectedKey: NodeKey | null;
-  selection: ReturnType<typeof useCanvasSelection>['runtime'];
+  selection: Pick<CanvasSelectionRuntime, 'iframeRef' | 'syncOverlay' | 'updateOverlay'>;
   run: (operation: Promise<{ ok: boolean; message?: string }>) => Promise<boolean>;
 }
 

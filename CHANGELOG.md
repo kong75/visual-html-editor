@@ -4,7 +4,7 @@ This project follows semantic versioning once packages are published.
 
 ## Unreleased
 
-No changes yet.
+- Export `BrandMark` from `@visual-html/react` so host applications can share the mark through the public package entry point.
 
 ## 0.1.0-alpha.1 - 2026-09-15
 

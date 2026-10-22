@@ -1,4 +1,4 @@
-import { parse, serialize } from 'parse5';
+import { defaultTreeAdapter, parse, serialize, type DefaultTreeAdapterTypes } from 'parse5';
 
 export const RUNTIME_CONTENT_SECURITY_POLICY = [
   "script-src 'none'",
@@ -25,9 +25,9 @@ function executableCss(value: string): boolean {
   return compact.includes('expression(') || compact.includes('javascript:') || compact.includes('vbscript:') || compact.includes('-moz-binding') || compact.includes('behavior:');
 }
 
-function hardenNode(node: any): void {
-  if (Array.isArray(node.attrs)) {
-    node.attrs = node.attrs.filter((attribute: { name: string; value: string }) => {
+function hardenNode(node: DefaultTreeAdapterTypes.Node): void {
+  if (defaultTreeAdapter.isElementNode(node)) {
+    node.attrs = node.attrs.filter((attribute) => {
       const name = attribute.name.toLowerCase();
       if (name.startsWith('on') || name === 'srcdoc') return false;
       if (name === 'style' && executableCss(attribute.value)) return false;
@@ -41,11 +41,12 @@ function hardenNode(node: any): void {
     });
   }
 
-  if (!Array.isArray(node.childNodes)) return;
-  node.childNodes = node.childNodes.filter((child: any) => {
+  if (!('childNodes' in node)) return;
+  node.childNodes = node.childNodes.filter((child) => {
+    if (!defaultTreeAdapter.isElementNode(child)) return true;
     if (blockedTags.has(child.tagName)) return false;
     if (child.tagName !== 'meta') return true;
-    const httpEquiv = child.attrs?.find((attribute: { name: string }) => attribute.name.toLowerCase() === 'http-equiv')?.value;
+    const httpEquiv = child.attrs.find((attribute) => attribute.name.toLowerCase() === 'http-equiv')?.value;
     return httpEquiv?.trim().toLowerCase() !== 'refresh';
   });
   for (const child of node.childNodes) hardenNode(child);

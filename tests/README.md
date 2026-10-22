@@ -12,6 +12,8 @@ These tests stay close to framework-neutral implementation details: parsing, sou
 
 React unit tests and the coverage runner resolve workspace packages directly to source, so they work on a fresh checkout without a preceding build. Packed-consumer tests separately verify the distributed artifacts.
 
+Focused React canvas tests cover local undo/redo history, runtime attribute isolation, text-range mapping, hit selection, and layout sizing in jsdom. Geometry tests supply measured dimensions because jsdom has no layout engine; transformed dragging and resizing remain browser-test responsibilities. The coverage runner includes both `.test.ts` and `.test.tsx` files, with separate regression thresholds for selection and text history.
+
 Run with:
 
 ```bash

@@ -6,8 +6,8 @@ import type { EditorTextSelection } from '../editor-types.js';
 import { pointTextOffset, queryRuntimeElement, restoreRichTextSelection, readRichTextSelection, type RichTextSelectionState } from './selection.js';
 import { runtimeAttributes, sourceRichTextHtml } from './attributes.js';
 import { TextEditHistory } from './text-edit-history.js';
+import type { ActiveRichTextEdit, TextEditingRuntime } from './runtime-types.js';
 
-interface ActiveRichTextEdit { element: HTMLElement; nodeKey: NodeKey; originalHtml: string; originalDomHtml: string; history: TextEditHistory }
 interface TextEditingOptions {
   controller: EditorController;
   revision: number;
@@ -193,7 +193,7 @@ export function useTextEditing({ controller, revision, mode, iframeRef, outlineN
     return () => cancelAnimationFrame(frame);
   }, [controller, mode, outlineNodes, refreshTextHistory, selectNode, revision, updateRichTextSelection]);
 
-  const runtime = useMemo(() => ({
+  const runtime = useMemo<TextEditingRuntime>(() => ({
     activeRichTextEditRef, richTextSelectionRef, setRichTextSelection: updateRichTextSelection,
     commitActiveRichTextEdit, refreshTextHistory, runHistory,
     toggleInlineMark, setInlineStyles, setBlockAlignment

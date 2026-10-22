@@ -2,8 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { EditorController, NodeKey } from '@visual-html/core';
 import type { EditorSelectionChange } from '../editor-types.js';
 import { queryRuntimeElement, syncRuntimeSelection } from './selection.js';
-
-export interface OverlayRect { left: number; top: number; width: number; height: number }
+import type { CanvasSelectionRuntime, OverlayRect } from './runtime-types.js';
 
 export function useCanvasSelection(controller: EditorController, revision: number, onSelectionChange?: (selection: EditorSelectionChange) => void) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
@@ -75,6 +74,6 @@ export function useCanvasSelection(controller: EditorController, revision: numbe
     };
   }, [syncOverlay]);
 
-  const runtime = useMemo(() => ({ iframeRef, selectedKeyRef, overlayRef, resizeHandleRef, selectNode, updateOverlay, syncOverlay }), [selectNode, updateOverlay, syncOverlay]);
+  const runtime = useMemo<CanvasSelectionRuntime>(() => ({ iframeRef, selectedKeyRef, overlayRef, resizeHandleRef, selectNode, updateOverlay, syncOverlay }), [selectNode, updateOverlay, syncOverlay]);
   return { selectedKey, overlay, runtime };
 }

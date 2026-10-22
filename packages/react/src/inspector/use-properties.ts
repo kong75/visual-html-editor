@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { EditorController, NodeKey } from '@visual-html/core';
-import type { useCanvasSelection } from '../canvas/use-selection.js';
+import type { CanvasSelectionRuntime } from '../canvas/runtime-types.js';
 import { queryRuntimeElement } from '../canvas/selection.js';
 import { inspectorStyleProperties, normalizeInspectorStyleValue } from './values.js';
 
@@ -8,7 +8,7 @@ interface InspectorPropertiesOptions {
   controller: EditorController;
   revision: number;
   selectedKey: NodeKey | null;
-  selection: ReturnType<typeof useCanvasSelection>['runtime'];
+  selection: Pick<CanvasSelectionRuntime, 'iframeRef' | 'selectedKeyRef'>;
   setNotice: (message: string | null) => void;
   run: (operation: Promise<{ ok: boolean; message?: string }>) => Promise<boolean>;
 }

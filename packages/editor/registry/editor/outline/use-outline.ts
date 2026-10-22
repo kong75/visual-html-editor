@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { EditorController, EditorSnapshot, NodeKey } from '@visual-html/core';
 import type { ElementBehaviorResolver } from '../element-behavior.js';
-import type { useCanvasSelection } from '../canvas/use-selection.js';
+import type { CanvasSelectionRuntime } from '../canvas/runtime-types.js';
 import { outlineHiddenTags, visibleOutlineNodes, initialCollapsedOutlineKeys } from './component-outline.js';
 import { queryRuntimeElement } from '../canvas/selection.js';
 
@@ -9,7 +9,7 @@ interface EditorOutlineOptions {
   controller: EditorController;
   snapshot: EditorSnapshot;
   selectedKey: NodeKey | null;
-  selection: ReturnType<typeof useCanvasSelection>['runtime'];
+  selection: Pick<CanvasSelectionRuntime, 'iframeRef' | 'selectNode' | 'updateOverlay'>;
   elementBehaviorResolvers: readonly ElementBehaviorResolver[];
   setMode: (mode: 'visual' | 'source') => void;
 }

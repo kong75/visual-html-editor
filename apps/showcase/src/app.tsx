@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { LandingPage } from './landing-page';
-import { BrandMark } from '../../../packages/react/src/brand-mark';
+import { BrandMark } from '@visual-html/react';
 
 const EditorPage = lazy(() => import('./editor-page').then((module) => ({ default: module.EditorPage })));
 const ControlledPage = lazy(() => import('./controlled-page').then((module) => ({ default: module.ControlledPage })));

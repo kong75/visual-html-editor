@@ -1,21 +1,20 @@
-import type { NodeKey, ParsedNode } from '@visual-html/core';
 import { isRichTextRegion, resolveEditingRegion, readRichTextSelection, replaceSelectionWithText } from './selection.js';
 import { sourceRichTextHtml } from './attributes.js';
 import { TextEditHistory } from './text-edit-history.js';
 
-import type { CanvasRuntimeContext } from './runtime-types.js';
+import type { BeginInlineEdit, CanvasRuntimeContext } from './runtime-types.js';
 
 export function createCanvasRichText(context: CanvasRuntimeContext) {
   const { controller, snapshot, doc, attrs, outlineNodes, elementBehaviorResolversRef, setNotice } = context;
   const { selectedKeyRef, selectNode, syncOverlay } = context.selection;
   const { activeRichTextEditRef, setRichTextSelection, commitActiveRichTextEdit, refreshTextHistory, runHistory, toggleInlineMark } = context.textEditing;
 
-  const beginInlineEdit = (
-    candidateElement: HTMLElement,
-    candidateKey: NodeKey,
-    candidateNode: ParsedNode,
-    clientX?: number,
-    clientY?: number,
+  const beginInlineEdit: BeginInlineEdit = (
+    candidateElement,
+    candidateKey,
+    candidateNode,
+    clientX,
+    clientY,
     reportUnsupported = false
   ): boolean => {
     if (!snapshot.profile.capabilities.editText) return false;

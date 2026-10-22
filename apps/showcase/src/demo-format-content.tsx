@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { BrandMark } from '../../../packages/react/src/brand-mark';
+import { BrandMark } from '@visual-html/react';
 import './demo-format-content.css';
 
 export interface FormatFrame {

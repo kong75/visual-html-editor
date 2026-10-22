@@ -1,13 +1,19 @@
 import React from 'react';
-import type { NodeKey } from '@visual-html/core';
+import type { NodeKey, ParsedNode } from '@visual-html/core';
 import type { ElementBehaviorResolver } from '../element-behavior.js';
 import { ComponentOutlineNode } from '../outline/component-outline.js';
-import type { useEditorOutline } from '../outline/use-outline.js';
 
 interface EditorNavigatorProps {
   navigationRail?: React.ReactNode;
   selectedKey: NodeKey | null;
-  outline: ReturnType<typeof useEditorOutline>;
+  outline: {
+    outlineNodes: Map<NodeKey, ParsedNode>;
+    outlineRoots: ParsedNode[];
+    outlineNodeCount: number;
+    collapsedOutlineKeys: Set<NodeKey>;
+    selectOutlineNode(key: NodeKey): void;
+    toggleOutlineNode(key: NodeKey): void;
+  };
   elementBehaviorResolvers: readonly ElementBehaviorResolver[];
 }
 

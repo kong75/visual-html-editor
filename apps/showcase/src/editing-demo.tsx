@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
-import { BrandMark } from '../../../packages/react/src/brand-mark';
+import { BrandMark } from '@visual-html/react';
 import ribbonArtwork from './assets/chrome-ribbon.webp';
 import './editing-demo.css';
 import { SlideDemoDocument, WebDemoDocument, FormatSource } from './demo-format-content';
