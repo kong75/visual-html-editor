@@ -12,7 +12,7 @@ export default defineConfig({
     include: [
       'packages/core/src/**/*.test.ts',
       'packages/deck/src/**/*.test.ts',
-      'packages/react/src/**/*.test.tsx',
+      'packages/react/src/**/*.test.{ts,tsx}',
       'tests/unit/**/*.test.ts'
     ],
     environment: 'node',
