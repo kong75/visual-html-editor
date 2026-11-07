@@ -47,7 +47,7 @@
     "attw": "attw --pack . --profile esm-only"
   },
   "dependencies": {
-    "parse5": "^8.0.1"
+    "parse5": "^8.1.0"
   },
   "repository": {
     "type": "git",

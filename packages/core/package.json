@@ -60,7 +60,7 @@
     "css-tree": "3.2.1",
     "entities": "^8.1.0",
     "magic-string": "^1.4.3",
-    "parse5": "^8.0.1"
+    "parse5": "^8.1.0"
   },
   "repository": {
     "type": "git",
